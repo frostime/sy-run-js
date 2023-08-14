@@ -1,18 +1,18 @@
 {
-  "name": "plugin-sample-vite",
+  "name": "sy-run-js",
   "author": "frostime",
-  "url": "https://github.com/frostime/plugin-sample-vite",
-  "version": "0.1.10",
+  "url": "https://github.com/frostime/sy-run-js",
+  "version": "0.1.0",
   "minAppVersion": "2.9.0",
   "backends": ["all"],
   "frontends": ["all"],
   "displayName": {
-    "en_US": "Plugin sample with vite",
-    "zh_CN": "插件样例 vite 版"
+    "en_US": "Run Javascript",
+    "zh_CN": "运行 Javascript"
   },
   "description": {
-    "en_US": "SiYuan plugin sample with vite",
-    "zh_CN": "使用 vite 开发的思源插件样例"
+    "en_US": "Run Javascript",
+    "zh_CN": "运行 Javascript"
   },
   "readme": {
     "en_US": "README.md",
