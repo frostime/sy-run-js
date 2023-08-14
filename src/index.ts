@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-08-14 20:58:26
+ * @LastEditTime : 2023-08-14 21:01:09
  * @Description  : 
  */
 import {
@@ -172,6 +172,7 @@ export default class PluginSample extends Plugin {
                 }
             });
             let svg = ele.querySelector(".b3-menu__action") as HTMLElement;
+            svg.classList.add("action-focus");
             svg.setAttribute("title", "Focus to block");
             svg.onclick = (e) => {
                 e.stopPropagation();
@@ -181,6 +182,15 @@ export default class PluginSample extends Plugin {
                         id: item.id,
                     }
                 });
+            }
+
+            let rmsvg = `<svg class="b3-menu__action action-remove"><use xlink:href="#iconClose"></use></svg>`;
+            ele.insertAdjacentHTML("beforeend", rmsvg);
+            let rm = ele.querySelector(".action-remove") as HTMLElement;
+            rm.setAttribute("title", "Remove");
+            rm.onclick = (e) => {
+                e.stopPropagation();
+                this.removeAction(item.id);
             }
         }
 
