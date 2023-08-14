@@ -3,6 +3,7 @@ import {
     showMessage,
     Menu
 } from "siyuan";
+import siyuan from "siyuan";
 import "@/index.scss";
 
 import * as api from "@/api";
@@ -47,16 +48,19 @@ export default class PluginSample extends Plugin {
             icon: 'iconJS',
             label: "运行代码",
             click: async () => {
-                let block  = await api.getBlockByID(id);
-                let code = block.content;
-                this.runCode(code);
+                this.runCodeBlock(id);
             }
         });
-        console.log(detail.menu);
     }
 
-    private runCode(code: string) {
+    private async runCodeBlock(id: BlockId) {
+        let block = await api.getBlockByID(id);
+        let code = block.content;
+        console.group("Run Javascript Code Block");
+        console.log('Code Block:', block.id);
         console.log(code);
+        let func = new Function('siyuan', 'api', 'plugin', 'thisBlock', code);
+        func(siyuan, api, this, block);
+        console.groupEnd();
     }
-
 }
