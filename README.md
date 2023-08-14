@@ -20,7 +20,7 @@
 - `saveAction`
 
   ```ts
-  saveAction(blockId: BlockId, title?: string, sort?: number)
+  public saveAction(blockId: BlockId, title?: string, sort?: number)
   ```
 
   Save the code block with the specified block ID. The saved action can be triggered quickly through the top bar menu button.
@@ -35,7 +35,13 @@
   removeAction(blockId: BlockId)
   ```
 
-  Remove action
+  public Remove action
+
+- `runCodeBlock`
+
+  ```ts
+  public runCodeBlock(id: BlockId)
+  ```
 
 ## Example
 
@@ -52,4 +58,15 @@ async function main() {
 }
 main();
 plugin.saveAction(thisBlock.id, "Test Code");
+```
+
+## Developer
+
+Expose a custom event to global.
+
+```ts
+let bus = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-run-js')?.eventBus;
+if (bus) {
+  bus.emit("run-code-block", blockID);
+}
 ```

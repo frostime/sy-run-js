@@ -19,7 +19,7 @@
 - `saveAction`
 
   ```ts
-  saveAction(blockId: BlockId, title?: string, sort?: number)
+  public saveAction(blockId: BlockId, title?: string, sort?: number)
   ```
 
   将指定 blockid 的 codeblock 保存, 保存的 action 可以通过顶栏菜单按钮来快速触发
@@ -31,10 +31,16 @@
 - `removeAction`
 
   ```ts
-  removeAction(blockId: BlockId)
+  public removeAction(blockId: BlockId)
   ```
 
   删除 action
+
+- `runCodeBlock`
+
+  ```ts
+  public runCodeBlock(id: BlockId)
+  ```
 
 ## 样例
 
@@ -51,4 +57,15 @@ async function main() {
 }
 main();
 plugin.saveAction(thisBlock.id, "Test Code");
+```
+
+## 开发者
+
+插件对外暴露 `eventBus` 类型 `run-code-block`, 输入参数为 BlockID.
+
+```ts
+let bus = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-run-js')?.eventBus;
+if (bus) {
+  bus.emit("run-code-block", blockID);
+}
 ```

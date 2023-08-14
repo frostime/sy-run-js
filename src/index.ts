@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-08-14 21:01:09
+ * @LastEditTime : 2023-08-14 21:41:17
  * @Description  : 
  */
 import {
@@ -64,6 +64,10 @@ export default class PluginSample extends Plugin {
         });
 
         this.eventBus.on("click-blockicon", this.blockIconEventBindThis);
+        //@ts-ignore
+        this.eventBus.on("run-code-block", ({blockID}: CustomEvent) => {
+            this.runCodeBlock(blockID);
+        });
 
         this.loadData(SAVED_CODE);
         this.data[SAVED_CODE] = this.data[SAVED_CODE] || {};
@@ -136,12 +140,18 @@ export default class PluginSample extends Plugin {
         });
     }
 
-    private async runCodeBlock(id: BlockId) {
+    public async runCodeBlock(id: BlockId) {
         let block = await api.getBlockByID(id);
         console.group("Run Javascript Code Block");
         if (!block) {
             console.error("Code Block ", id, " Not Found");
             showMessage(`Code Block Not Found`);
+            console.groupEnd();
+            return;
+        }
+        if (block.type !== "c") {
+            console.error("Block ", id, " is not Code Block");
+            showMessage(`Block is not Code Block`);
             console.groupEnd();
             return;
         }
