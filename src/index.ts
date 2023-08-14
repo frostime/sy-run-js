@@ -3,13 +3,14 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-08-14 20:38:22
+ * @LastEditTime : 2023-08-14 20:58:26
  * @Description  : 
  */
 import {
     Plugin,
     showMessage,
     getFrontend,
+    openTab,
     Menu
 } from "siyuan";
 import siyuan from "siyuan";
@@ -94,6 +95,7 @@ export default class PluginSample extends Plugin {
             sort: sort
         };
         showMessage(`Save Code Block Success "${title}"`);
+        this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
     }
 
     public removeAction(blockId: BlockId) {
@@ -102,6 +104,7 @@ export default class PluginSample extends Plugin {
         }
         delete this.data[SAVED_CODE][blockId];
         showMessage(`Remove Code Block Success`);
+        this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
     }
 
     private async blockIconEvent({ detail }: any) {
@@ -135,8 +138,14 @@ export default class PluginSample extends Plugin {
 
     private async runCodeBlock(id: BlockId) {
         let block = await api.getBlockByID(id);
-        let code = block.content;
         console.group("Run Javascript Code Block");
+        if (!block) {
+            console.error("Code Block ", id, " Not Found");
+            showMessage(`Code Block Not Found`);
+            console.groupEnd();
+            return;
+        }
+        let code = block.content;
         console.log('Code Block:', block.id);
         console.log(code);
         let func = new Function(
@@ -154,12 +163,25 @@ export default class PluginSample extends Plugin {
             return a.sort - b.sort;
         });
         for (let item of items) {
-            menu.addItem({
+            let ele: HTMLElement = menu.addItem({
+                icon: "iconJS",
                 label: item.title,
+                action: "iconFocus",
                 click: () => {
                     this.runCodeBlock(item.id);
                 }
             });
+            let svg = ele.querySelector(".b3-menu__action") as HTMLElement;
+            svg.setAttribute("title", "Focus to block");
+            svg.onclick = (e) => {
+                e.stopPropagation();
+                openTab({
+                    app: this.app,
+                    doc: {
+                        id: item.id,
+                    }
+                });
+            }
         }
 
         if (this.isMobile) {
