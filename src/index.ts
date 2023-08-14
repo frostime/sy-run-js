@@ -8,6 +8,14 @@ import "@/index.scss";
 
 import * as api from "@/api";
 
+import { Client } from "@siyuan-community/siyuan-sdk";
+
+const client = new Client({
+    //@ts-ignore
+    token: window.siyuan.config.api.token
+});
+
+
 export default class PluginSample extends Plugin {
 
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
@@ -46,7 +54,7 @@ export default class PluginSample extends Plugin {
         let menu: Menu = detail.menu;
         menu.addItem({
             icon: 'iconJS',
-            label: "运行代码",
+            label: "Run JS",
             click: async () => {
                 this.runCodeBlock(id);
             }
@@ -59,8 +67,11 @@ export default class PluginSample extends Plugin {
         console.group("Run Javascript Code Block");
         console.log('Code Block:', block.id);
         console.log(code);
-        let func = new Function('siyuan', 'api', 'plugin', 'thisBlock', code);
-        func(siyuan, api, this, block);
+        let func = new Function(
+            'siyuan', 'client', 'api', 'plugin', 'thisBlock',
+            code
+        );
+        func(siyuan, client, api, this, block);
         console.groupEnd();
     }
 }
