@@ -1,1 +1,0 @@
-type ArgType = "wsmain-click-blockicon";
