@@ -6,6 +6,8 @@
   3. 插件将自动运行代码块中的代码
 - 将代码块注册到顶栏按钮
   见 `plugin.saveAction` API
+- 为代码块添加运行按钮
+  见 `plugin.createRunButton` API
 
 ## 可用的 API
 

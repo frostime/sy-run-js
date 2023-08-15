@@ -7,6 +7,8 @@
   3. The plugin will automatically run the code in the code block
 - Register code block to the top bar button
   See `plugin.saveAction` API
+- Add run button to code block
+  See `plugin.createRunButton` API
 
 ## Available APIs
 
