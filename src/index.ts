@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-08-14 21:41:17
+ * @LastEditTime : 2023-08-15 22:28:02
  * @Description  : 
  */
 import {
@@ -28,12 +28,72 @@ const client = new Client({
 
 const SAVED_CODE = "SavedCode.json";
 
+const ButtonTemplate = {
+    template: `
+<div>
+    <button onclick="update()" class="b3-button b3-button--outline fn__flex-center fn__size200">
+        {{text}}
+    </button>
+</div>
+<style>
+    .b3-button {
+        cursor: pointer;
+        color: var(--b3-theme-on-primary);
+        border-radius: var(--b3-border-radius);
+        line-height: 20px;
+        padding: 4px 8px;
+        background-color: var(--b3-theme-primary);
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        border: 0;
+        box-sizing: border-box;
+        text-align: center;
+    }
+    .b3-button--outline {
+        color: var(--b3-theme-primary);
+        box-shadow: inset 0 0 0 .6px var(--b3-theme-primary);
+        background-color: rgba(0,0,0,0);
+    }
+    .fn__size200 {
+        width: 200px;
+        flex-shrink: 0;
+    }
+    .fn__flex-center {
+        align-self: center;
+    }
+    .b3-button--outline:hover, .b3-button--outline:focus {
+        background-color: var(--b3-theme-primary-lightest);
+        box-shadow: inset 0 0 0 1px var(--b3-theme-primary);
+        text-decoration: none;
+    }
+</style>
+<script>
+    function update()
+    {
+        console.log('update')
+        let plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-run-js');
+        console.log(plugin);
+        if (plugin)
+        {
+            plugin.runCodeBlock("{{id}}");
+        }
+    }
+</script>
+`,
+    new(text: string, id: BlockId) {
+        return this.template.replace(/{{text}}/g, text).replace(/{{id}}/g, id);
+    }
+};
+
 export default class PluginSample extends Plugin {
 
     isMobile: boolean;
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
     declare data: {
-        SAVE_CODE: {[key: string]: IAction[]}
+        SAVE_CODE: { [key: string]: IAction[] }
     };
 
     async onload() {
@@ -65,7 +125,7 @@ export default class PluginSample extends Plugin {
 
         this.eventBus.on("click-blockicon", this.blockIconEventBindThis);
         //@ts-ignore
-        this.eventBus.on("run-code-block", ({blockID}: CustomEvent) => {
+        this.eventBus.on("run-code-block", ({ blockID }: CustomEvent) => {
             this.runCodeBlock(blockID);
         });
 
@@ -138,6 +198,12 @@ export default class PluginSample extends Plugin {
                 this.runCodeBlock(id);
             }
         });
+    }
+
+    public async createRunButton(id: BlockId, title?: string) {
+        title = title || "Run";
+        let html = ButtonTemplate.new(title, id);
+        api.insertBlock("markdown", html, id);
     }
 
     public async runCodeBlock(id: BlockId) {

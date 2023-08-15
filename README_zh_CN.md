@@ -42,6 +42,20 @@
   public runCodeBlock(id: BlockId)
   ```
 
+- `createRunButton`
+
+  ```ts
+  public createRunButton(id: BlockId, title?: string)
+  ```
+
+  创建一个能快速运行相应代码块的按钮
+
+  ```js
+  plugin.createRunButton(thisBlock.id);
+  ```
+
+  ![CreateRunButton](asset/createRunButton.png)
+
 ## 样例
 
 ```js

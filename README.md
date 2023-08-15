@@ -43,6 +43,20 @@
   public runCodeBlock(id: BlockId)
   ```
 
+- `createRunButton`
+
+  ```ts
+  public createRunButton(id: BlockId, title?: string)
+  ```
+
+  Create a button, uppon the given code block, to quickly run the code block.
+
+  ```js
+  plugin.createRunButton(thisBlock.id);
+  ```
+
+  ![CreateRunButton](asset/createRunButton.png)
+
 ## Example
 
 ```js
