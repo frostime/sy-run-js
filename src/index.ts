@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-08-16 10:15:13
+ * @LastEditTime : 2023-08-16 10:19:30
  * @Description  : 
  */
 import {
@@ -78,7 +78,8 @@ const ButtonTemplate = {
         console.log(plugin);
         if (plugin)
         {
-            plugin.runCodeBlock("{{id}}");
+            // plugin.runCodeBlock("{{id}}");
+            plugin?.eventBus?.emit("run-code-block", "{{id}}");
         }
     }
 </script>
