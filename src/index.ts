@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-08-15 22:28:02
+ * @LastEditTime : 2023-08-16 10:15:13
  * @Description  : 
  */
 import {
@@ -125,8 +125,8 @@ export default class PluginSample extends Plugin {
 
         this.eventBus.on("click-blockicon", this.blockIconEventBindThis);
         //@ts-ignore
-        this.eventBus.on("run-code-block", ({ blockID }: CustomEvent) => {
-            this.runCodeBlock(blockID);
+        this.eventBus.on("run-code-block", ({ detail }) => {
+            this.runCodeBlock(detail);
         });
 
         this.loadData(SAVED_CODE);
