@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-08-16 10:19:30
+ * @LastEditTime : 2023-08-17 00:19:41
  * @Description  : 
  */
 import {
@@ -31,7 +31,7 @@ const SAVED_CODE = "SavedCode.json";
 const ButtonTemplate = {
     template: `
 <div>
-    <button onclick="update()" class="b3-button b3-button--outline fn__flex-center fn__size200">
+    <button onclick="{{funcname}}()" class="b3-button b3-button--outline fn__flex-center fn__size200">
         {{text}}
     </button>
 </div>
@@ -71,7 +71,7 @@ const ButtonTemplate = {
     }
 </style>
 <script>
-    function update()
+    function {{funcname}}()
     {
         console.log('update')
         let plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-run-js');
@@ -85,7 +85,10 @@ const ButtonTemplate = {
 </script>
 `,
     new(text: string, id: BlockId) {
-        return this.template.replace(/{{text}}/g, text).replace(/{{id}}/g, id);
+        let funcname = `run_${id.replace(/-/g, "_")})}`
+        return this.template.replace(/{{text}}/g, text)
+                            .replace(/{{id}}/g, id)
+                            .replace(/{{funcname}}/g, funcname);
     }
 };
 
