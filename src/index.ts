@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-08-17 00:19:41
+ * @LastEditTime : 2023-08-17 00:23:42
  * @Description  : 
  */
 import {
@@ -85,7 +85,7 @@ const ButtonTemplate = {
 </script>
 `,
     new(text: string, id: BlockId) {
-        let funcname = `run_${id.replace(/-/g, "_")})}`
+        let funcname = `Run_${id.replace(/-/g, "_")}`
         return this.template.replace(/{{text}}/g, text)
                             .replace(/{{id}}/g, id)
                             .replace(/{{funcname}}/g, funcname);
