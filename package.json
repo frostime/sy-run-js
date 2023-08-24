@@ -1,6 +1,6 @@
 {
   "name": "sy-run-js",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "type": "module",
   "description": "",
   "repository": "",
@@ -20,7 +20,7 @@
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
     "sass": "^1.62.1",
-    "siyuan": "^0.7.8",
+    "siyuan": "^0.8.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "vite": "^4.3.7",
@@ -28,6 +28,6 @@
     "vite-plugin-zip-pack": "^1.0.5"
   },
   "dependencies": {
-    "@siyuan-community/siyuan-sdk": "^0.2.1"
+    "@siyuan-community/siyuan-sdk": "^0.2.2"
   }
 }
