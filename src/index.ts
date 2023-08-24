@@ -189,8 +189,11 @@ export default class PluginSample extends Plugin {
         ) as HTMLSpanElement;
         if (!span) {
             return;
-        } else if (span.innerText !== "js" && span.innerText !== "javascript") {
-            return;
+        } else {
+            let text = span.innerText.toLocaleLowerCase();
+            if (text !== "js" && text !== "javascript") {
+                return;
+            }
         }
 
         let id = ele.getAttribute("data-node-id");
