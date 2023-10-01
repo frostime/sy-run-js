@@ -2,10 +2,16 @@
 
 - 运行代码块
   1. 新建一个 javascript 代码块
-  2. 点击「块菜单——>Run JS」
+  2. 点击「块菜单——>Run JS——>运行代码」
   3. 插件将自动运行代码块中的代码
 - 将代码块注册到顶栏按钮
-  见 `plugin.saveAction` API
+
+  - 方案1: 点击「块菜单——>Run JS——>添加到顶栏」
+
+    方案1需要设置代码块的名称
+
+  - 方案2:`plugin.saveAction` API
+
 - 为代码块添加运行按钮
   见 `plugin.createRunButton` API
 

@@ -10,6 +10,9 @@
     "confirmRemove": "Confirm to delete the data in ${name}?",
     "insertEmoji": "Insert Emoji",
     "name": "SiYuan",
+    "runit": "Run It",
+    "saveit": "Save to topbar",
+    "pleasename": "Please set the name of the block first",
     "hello": {
         "makesure": "Before using this template, please read the <a href=\"https://github.com/siyuan-note/plugin-sample\">offical sample</a>, make sure that you've known about the pipeline for plugin developing."
     }

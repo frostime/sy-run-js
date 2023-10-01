@@ -3,10 +3,15 @@
 
 - Run code block
   1. Create a new JavaScript code block
-  2. Click "Block Menu -> Run JS"
+  2. Click "Block Menu -> Run JS -> Run it"
   3. The plugin will automatically run the code in the code block
 - Register code block to the top bar button
-  See `plugin.saveAction` API
+
+  - Way 1: Click "Block Menu -> Run JS -> Save to topbar"
+
+    You should set the name of the code block first
+
+  - Way 2: use `plugin.saveAction` API
 - Add run button to code block
   See `plugin.createRunButton` API
 
