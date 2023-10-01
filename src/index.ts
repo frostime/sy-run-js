@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-08-17 00:23:42
+ * @LastEditTime : 2023-10-01 16:19:12
  * @Description  : 
  */
 import {
@@ -11,7 +11,8 @@ import {
     showMessage,
     getFrontend,
     openTab,
-    Menu
+    Menu,
+    IMenuItemOption
 } from "siyuan";
 import siyuan from "siyuan";
 import "@/index.scss";
@@ -92,7 +93,7 @@ const ButtonTemplate = {
     }
 };
 
-export default class PluginSample extends Plugin {
+export default class RunJsPlugin extends Plugin {
 
     isMobile: boolean;
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
@@ -198,12 +199,30 @@ export default class PluginSample extends Plugin {
 
         let id = ele.getAttribute("data-node-id");
         let menu: Menu = detail.menu;
+        let submenus: IMenuItemOption[] = [
+            {
+                label: this.i18n.runit,
+                click: async () => {
+                    this.runCodeBlock(id);
+                }
+            },
+            {
+                label: this.i18n.saveit,
+                click: async () => {
+                    let name = ele.getAttribute("name");
+                    if (name === undefined || name === null || name === "") {
+                        showMessage(`请为代码块设置命名`);
+                        return;
+                    }
+                    this.saveAction(id, name);
+                }
+            }
+        ];
         menu.addItem({
             icon: 'iconJS',
             label: "Run JS",
-            click: async () => {
-                this.runCodeBlock(id);
-            }
+            type: "submenu",
+            submenu: submenus
         });
     }
 
