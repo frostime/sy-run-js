@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-10-01 16:19:12
+ * @LastEditTime : 2023-10-01 16:44:31
  * @Description  : 
  */
 import {
@@ -295,6 +295,26 @@ export default class RunJsPlugin extends Plugin {
                 this.removeAction(item.id);
             }
         }
+        menu.addSeparator();
+        menu.addItem({
+            icon: 'iconLayoutBottom',
+            label: "Document",
+            type: "submenu",
+            submenu: [
+                {
+                    label: "SiYuan Petal",
+                    click: () => {
+                        window.open("https://github.com/siyuan-note/petal/blob/main/siyuan.d.ts");
+                    }
+                },
+                {
+                    label: "SiYuan SDK",
+                    click: () => {
+                        window.open("https://docs.siyuan-note.club/zh-Hans/reference/community/siyuan-sdk/");
+                    }
+                }
+            ]
+        });
 
         if (this.isMobile) {
             menu.fullscreen();
