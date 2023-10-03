@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-10-01 16:44:31
+ * @LastEditTime : 2023-10-03 17:44:00
  * @Description  : 
  */
 import {
@@ -20,6 +20,7 @@ import "@/index.scss";
 import * as api from "@/api";
 
 import { Client } from "@siyuan-community/siyuan-sdk";
+import { CANCELLED } from "dns";
 
 const client = new Client({
     //@ts-ignore
@@ -28,6 +29,7 @@ const client = new Client({
 
 
 const SAVED_CODE = "SavedCode.json";
+const CALLABLE = "Callable.json";
 
 const ButtonTemplate = {
     template: `
@@ -99,6 +101,7 @@ export default class RunJsPlugin extends Plugin {
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
     declare data: {
         SAVE_CODE: { [key: string]: IAction[] }
+        CALLABLE: { [key: string]: BlockId }
     };
 
     async onload() {
@@ -134,12 +137,42 @@ export default class RunJsPlugin extends Plugin {
             this.runCodeBlock(detail);
         });
 
-        this.loadData(SAVED_CODE);
+        await Promise.all([this.loadData(SAVED_CODE), this.loadData(CALLABLE)]);
         this.data[SAVED_CODE] = this.data[SAVED_CODE] || {};
+        this.data[CALLABLE] = this.data[CALLABLE] || {};
     }
 
     onunload() {
         this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
+    }
+
+    public async call(callableId: string, ...args: any[]) {
+        console.log("call", callableId, args);
+        let blockId = this.data[CALLABLE]?.[callableId];
+        if (!blockId) {
+            console.error("Callable Not Found", callableId);
+            showMessage(`Callable Not Found: ${callableId}`);
+            return;
+        }
+        let block = await api.getBlockByID(blockId);
+        if (!block) {
+            console.error("Code Block ", blockId, " Not Found");
+            showMessage(`Code Block Not Found`);
+            console.groupEnd();
+            return;
+        }
+        if (block.type !== "c") {
+            console.error("Block ", blockId, " is not Code Block");
+            showMessage(`Block is not Code Block`);
+            console.groupEnd();
+            return;
+        }
+        let code = block.content;
+        let func = new Function(
+            'siyuan', 'client', 'api', 'plugin', 'thisBlock', 'args',
+            code
+        );
+        return func(siyuan, client, api, this, block, args);
     }
 
     public async saveAction(blockId: BlockId, title?: string, sort?: number) {
@@ -215,6 +248,23 @@ export default class RunJsPlugin extends Plugin {
                         return;
                     }
                     this.saveAction(id, name);
+                }
+            },
+            {
+                label: "保存为可调用函数",
+                click: async () => {
+                    let name = ele.getAttribute("name");
+                    if (name === undefined || name === null || name === "") {
+                        showMessage(`请为代码块设置命名`);
+                        return;
+                    }
+                    if (this.data[CALLABLE]?.[name] !== undefined) {
+                        showMessage(`函数名已存在`);
+                        return;
+                    }
+                    this.data[CALLABLE][name] = id;
+                    showMessage(`保存为可调用函数成功: ${name}`);
+                    this.saveData(CALLABLE, this.data[CALLABLE]);
                 }
             }
         ];
