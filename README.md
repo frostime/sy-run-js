@@ -12,6 +12,9 @@
     You should set the name of the code block first
 
   - Way 2: use `plugin.saveAction` API
+
+- Register code block as a callable module by other code blocks
+
 - Add run button to code block
   See `plugin.createRunButton` API
 
@@ -64,6 +67,16 @@
 
   ![CreateRunButton](asset/createRunButton.png)
 
+- `call`
+
+  ```ts
+  public async call(callableId: string, ...args: any[]): Promise<any>
+  ```
+
+  Call the registered callable function
+
+  See details bellow
+
 ## Example
 
 ```js
@@ -80,6 +93,46 @@ async function main() {
 main();
 plugin.saveAction(thisBlock.id, "Test Code");
 ```
+
+## Registering Code Blocks as Callable Methods
+
+Click on the code block menu and select "Save as Callable" to convert the corresponding code block into a callable function. Here's an example:
+
+1. First, create a code block that contains a return statement:
+
+```js
+function getActiveDoc() {
+    let tab = document.querySelector("div.layout__wnd--active ul.layout-tab-bar>li.item--focus");
+    let dataId= tab?.getAttribute("data-id");
+    if (!dataId) {
+        return null;
+    }
+    const activeTab = document.querySelector(
+        `.layout-tab-container.fn__flex-1>div.protyle[data-id="${dataId}"]`
+    );
+    const eleTitle = activeTab?.querySelector(".protyle-title");
+    let docId = eleTitle?.getAttribute("data-node-id");
+    return docId;
+}
+console.log(args);
+return getActiveDoc();
+```
+
+Note the `args` variable, which will be an array of arguments passed in when the function is called.
+
+2. Name the code block `GetActiveDoc`.
+3. Save it as a callable function.
+4. Use `plugin.call("GetActiveDoc", ...args)` to call the function. The `call` method returns a Promise, so if you need to `await` it, you must call it within an `async` function.
+
+```js
+const main = async () => {
+  let ans = await plugin.call('getActiveDoc', 'parameter1', 'parameter2');
+  siyuan.showMessage("Current Document:" + ans, 5000);
+}
+main();
+```
+
+At runtime, `'parameter1'` and `'parameter2'` will be combined into the `args` array.
 
 ## Developer
 

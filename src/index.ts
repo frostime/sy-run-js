@@ -146,7 +146,7 @@ export default class RunJsPlugin extends Plugin {
         this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
     }
 
-    public async call(callableId: string, ...args: any[]) {
+    public async call(callableId: string, ...args: any[]): Promise<any> {
         console.log("call", callableId, args);
         let blockId = this.data[CALLABLE]?.[callableId];
         if (!blockId) {
@@ -244,26 +244,26 @@ export default class RunJsPlugin extends Plugin {
                 click: async () => {
                     let name = ele.getAttribute("name");
                     if (name === undefined || name === null || name === "") {
-                        showMessage(`请为代码块设置命名`);
+                        showMessage(`Please`);
                         return;
                     }
                     this.saveAction(id, name);
                 }
             },
             {
-                label: "保存为可调用函数",
+                label: this.i18n.saveascallable,
                 click: async () => {
                     let name = ele.getAttribute("name");
                     if (name === undefined || name === null || name === "") {
-                        showMessage(`请为代码块设置命名`);
+                        showMessage(`Please name the block first`);
                         return;
                     }
                     if (this.data[CALLABLE]?.[name] !== undefined) {
-                        showMessage(`函数名已存在`);
+                        showMessage(`Callable has been defined: ${name}`);
                         return;
                     }
                     this.data[CALLABLE][name] = id;
-                    showMessage(`保存为可调用函数成功: ${name}`);
+                    showMessage(`Callable saved: ${name}`);
                     this.saveData(CALLABLE, this.data[CALLABLE]);
                 }
             }
