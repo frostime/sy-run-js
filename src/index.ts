@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-10-03 17:44:00
+ * @LastEditTime : 2023-10-03 19:17:26
  * @Description  : 
  */
 import {
@@ -346,6 +346,43 @@ export default class RunJsPlugin extends Plugin {
             }
         }
         menu.addSeparator();
+        let callSubmenu: IMenuItemOption[] = [];
+        for (let [name, id] of Object.entries(this.data[CALLABLE])) {
+            let ele  = document.createElement("button");
+            ele.className = "b3-menu__item";
+            ele.setAttribute("data-block-id", id as string);
+            ele.innerHTML = `<span class="b3-menu__label">${name}</span><svg class="b3-menu__action action-remove" title="Remove"><use xlink:href="#iconClose"></use></svg>`;
+            ele.onclick = () => {
+                openTab({
+                    app: this.app,
+                    doc: {
+                        //@ts-ignore
+                        id: id,
+                        zoomIn: true
+                    }
+                });
+            }
+            let rm = ele.querySelector(".action-remove") as HTMLElement;
+            rm.setAttribute("title", "Remove");
+            rm.onclick = (e) => {
+                e.stopPropagation();
+                // this.data[CALLABLE][name] = undefined;
+                delete this.data[CALLABLE][name];
+                this.saveData(CALLABLE, this.data[CALLABLE]);
+                showMessage(`Remove Callable Success`);
+            }
+            callSubmenu.push({
+                element: ele
+            });
+        }
+
+        menu.addItem({
+            icon: 'iconLayoutBottom',
+            label: "Callable",
+            type: "submenu",
+            submenu: callSubmenu
+        });
+
         menu.addItem({
             icon: 'iconLayoutBottom',
             label: "Document",
