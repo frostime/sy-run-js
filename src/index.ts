@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-10-01 16:44:31
+ * @LastEditTime : 2023-10-03 19:17:26
  * @Description  : 
  */
 import {
@@ -20,6 +20,7 @@ import "@/index.scss";
 import * as api from "@/api";
 
 import { Client } from "@siyuan-community/siyuan-sdk";
+import { CANCELLED } from "dns";
 
 const client = new Client({
     //@ts-ignore
@@ -28,6 +29,7 @@ const client = new Client({
 
 
 const SAVED_CODE = "SavedCode.json";
+const CALLABLE = "Callable.json";
 
 const ButtonTemplate = {
     template: `
@@ -99,6 +101,7 @@ export default class RunJsPlugin extends Plugin {
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
     declare data: {
         SAVE_CODE: { [key: string]: IAction[] }
+        CALLABLE: { [key: string]: BlockId }
     };
 
     async onload() {
@@ -134,12 +137,42 @@ export default class RunJsPlugin extends Plugin {
             this.runCodeBlock(detail);
         });
 
-        this.loadData(SAVED_CODE);
+        await Promise.all([this.loadData(SAVED_CODE), this.loadData(CALLABLE)]);
         this.data[SAVED_CODE] = this.data[SAVED_CODE] || {};
+        this.data[CALLABLE] = this.data[CALLABLE] || {};
     }
 
     onunload() {
         this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
+    }
+
+    public async call(callableId: string, ...args: any[]): Promise<any> {
+        console.log("call", callableId, args);
+        let blockId = this.data[CALLABLE]?.[callableId];
+        if (!blockId) {
+            console.error("Callable Not Found", callableId);
+            showMessage(`Callable Not Found: ${callableId}`);
+            return;
+        }
+        let block = await api.getBlockByID(blockId);
+        if (!block) {
+            console.error("Code Block ", blockId, " Not Found");
+            showMessage(`Code Block Not Found`);
+            console.groupEnd();
+            return;
+        }
+        if (block.type !== "c") {
+            console.error("Block ", blockId, " is not Code Block");
+            showMessage(`Block is not Code Block`);
+            console.groupEnd();
+            return;
+        }
+        let code = block.content;
+        let func = new Function(
+            'siyuan', 'client', 'api', 'plugin', 'thisBlock', 'args',
+            code
+        );
+        return func(siyuan, client, api, this, block, args);
     }
 
     public async saveAction(blockId: BlockId, title?: string, sort?: number) {
@@ -211,10 +244,27 @@ export default class RunJsPlugin extends Plugin {
                 click: async () => {
                     let name = ele.getAttribute("name");
                     if (name === undefined || name === null || name === "") {
-                        showMessage(`请为代码块设置命名`);
+                        showMessage(`Please`);
                         return;
                     }
                     this.saveAction(id, name);
+                }
+            },
+            {
+                label: this.i18n.saveascallable,
+                click: async () => {
+                    let name = ele.getAttribute("name");
+                    if (name === undefined || name === null || name === "") {
+                        showMessage(`Please name the block first`);
+                        return;
+                    }
+                    if (this.data[CALLABLE]?.[name] !== undefined) {
+                        showMessage(`Callable has been defined: ${name}`);
+                        return;
+                    }
+                    this.data[CALLABLE][name] = id;
+                    showMessage(`Callable saved: ${name}`);
+                    this.saveData(CALLABLE, this.data[CALLABLE]);
                 }
             }
         ];
@@ -296,6 +346,43 @@ export default class RunJsPlugin extends Plugin {
             }
         }
         menu.addSeparator();
+        let callSubmenu: IMenuItemOption[] = [];
+        for (let [name, id] of Object.entries(this.data[CALLABLE])) {
+            let ele  = document.createElement("button");
+            ele.className = "b3-menu__item";
+            ele.setAttribute("data-block-id", id as string);
+            ele.innerHTML = `<span class="b3-menu__label">${name}</span><svg class="b3-menu__action action-remove" title="Remove"><use xlink:href="#iconClose"></use></svg>`;
+            ele.onclick = () => {
+                openTab({
+                    app: this.app,
+                    doc: {
+                        //@ts-ignore
+                        id: id,
+                        zoomIn: true
+                    }
+                });
+            }
+            let rm = ele.querySelector(".action-remove") as HTMLElement;
+            rm.setAttribute("title", "Remove");
+            rm.onclick = (e) => {
+                e.stopPropagation();
+                // this.data[CALLABLE][name] = undefined;
+                delete this.data[CALLABLE][name];
+                this.saveData(CALLABLE, this.data[CALLABLE]);
+                showMessage(`Remove Callable Success`);
+            }
+            callSubmenu.push({
+                element: ele
+            });
+        }
+
+        menu.addItem({
+            icon: 'iconLayoutBottom',
+            label: "Callable",
+            type: "submenu",
+            submenu: callSubmenu
+        });
+
         menu.addItem({
             icon: 'iconLayoutBottom',
             label: "Document",

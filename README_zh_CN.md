@@ -12,6 +12,8 @@
 
   - 方案2:`plugin.saveAction` API
 
+- 将代码块注册为一个可供其他代码块调用的 Callable 模块
+
 - 为代码块添加运行按钮
   见 `plugin.createRunButton` API
 
@@ -64,6 +66,17 @@
 
   ![CreateRunButton](asset/createRunButton.png)
 
+
+- `call`
+
+  ```ts
+  public async call(callableId: string, ...args: any[]): Promise<any>
+  ```
+
+  调用注册的方法代码块
+
+  详情见下方
+
 ## 样例
 
 ```js
@@ -80,6 +93,45 @@ async function main() {
 main();
 plugin.saveAction(thisBlock.id, "Test Code");
 ```
+
+## 将代码块注册为可调用的方法
+
+点击代码块菜单，选择 "保存为可调用方法"，可以将对应代码块转换为一个可以被调用的。示例如下：
+
+1. 首先新建一个包含了 return 语句的代码块
+
+```js
+function getActiveDoc() {
+    let tab = document.querySelector("div.layout__wnd--active ul.layout-tab-bar>li.item--focus");
+    let dataId= tab?.getAttribute("data-id");
+    if (!dataId) {
+        return null;
+    }
+    const activeTab = document.querySelector(
+        `.layout-tab-container.fn__flex-1>div.protyle[data-id="${dataId}"]`
+    );
+    const eleTitle = activeTab?.querySelector(".protyle-title");
+    let docId = eleTitle?.getAttribute("data-node-id");
+    return docId;
+}
+console.log(args);
+return getActiveDoc();
+```
+注意到 `args`, 这个将是调用的时候传入的参数组成的数组.
+
+2. 将代码块命名为 `GetActiveDoc`
+3. 保存为可调用的函数
+4. 使用 `plugin.call("GetActiveDoc", ...args)` 来调用。 call 返回的对象为一个 Promise, 所以如果需要 await, 必须把它包裹在一个 async 函数当中调用。
+
+```js
+const main = async () => {
+  let ans = await plugin.call('getActiveDoc', '参数1', '参数2');
+  siyuan.showMessage("Current Document:" + ans, 5000);
+}
+main();
+```
+运行时 '参数1', '参数2' 将会组成 `args` 数组。
+
 
 ## 开发者
 
