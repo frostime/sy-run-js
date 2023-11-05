@@ -2,7 +2,7 @@
   "name": "sy-run-js",
   "author": "frostime",
   "url": "https://github.com/frostime/sy-run-js",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "minAppVersion": "2.10.5",
   "backends": ["all"],
   "frontends": ["all"],
@@ -22,5 +22,13 @@
     "custom": [
       "https://afdian.net/a/frostime"
     ]
-  }
+  },
+  "keywords": [
+    "javascript",
+    "js",
+    "run",
+    "script",
+    "运行",
+    "脚本"
+  ]
 }
