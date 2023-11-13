@@ -53,6 +53,13 @@
   public runCodeBlock(id: BlockId)
   ```
 
+- `runJsCode`
+
+  ```ts
+  public async runJsCode(code: string)
+  ```
+
+
 - `createRunButton`
 
   ```ts
@@ -134,13 +141,28 @@ main();
 
 At runtime, `'parameter1'` and `'parameter2'` will be combined into the `args` array.
 
-## Developer
+## EventBus
 
-Expose a custom event to global.
+The plugin extends `eventBus` to add events that can be called externally.
+
+```ts
+interface MyEventBusMap extends IEventBusMap {
+    'run-code-block': BlockId;
+    'run-js-code': string;
+}
+```
+
+1. `run-code-block`, input parameter is BlockID, run the js code block with specified ID.
+2. `run-js-code`, input parameter is a js code string, run the specified code.
 
 ```ts
 let bus = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-run-js')?.eventBus;
 if (bus) {
   bus.emit("run-code-block", blockID);
+  bus.emit("run-js-code", `
+    console.log("Hello world");
+  `);
 }
 ```
+
+> But you can actually call the `plugin.runCodeBlock` and `plugin.runJsCode` functions directly without using eventBus.

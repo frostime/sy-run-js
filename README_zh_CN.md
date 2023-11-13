@@ -52,6 +52,12 @@
   public runCodeBlock(id: BlockId)
   ```
 
+- `runJsCode`
+
+  ```ts
+  public async runJsCode(code: string)
+  ```
+
 - `createRunButton`
 
   ```ts
@@ -133,13 +139,28 @@ main();
 运行时 '参数1', '参数2' 将会组成 `args` 数组。
 
 
-## 开发者
+## EventBus
 
-插件对外暴露 `eventBus` 类型 `run-code-block`, 输入参数为 BlockID.
+插件拓展了 `eventBus`，增加了外部可以调用的事件
+
+```ts
+interface MyEventBusMap extends IEventBusMap {
+    'run-code-block': BlockId;
+    'run-js-code': string;
+}
+```
+
+1. `run-code-block`, 输入参数为 BlockID, 运行指定 ID 的 js 代码块
+2. `run-js-code`, 输入参数为 js 代码字符串，运行指定的代码
 
 ```ts
 let bus = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-run-js')?.eventBus;
 if (bus) {
   bus.emit("run-code-block", blockID);
+  bus.emit("run-js-code", `
+    console.log("Hello world");
+  `);
 }
 ```
+
+> 但是实际上你也可以直接调用 `plugin.runCodeBlock` 和 `plugin.runJsCode` 函数而不必使用 eventBus.
