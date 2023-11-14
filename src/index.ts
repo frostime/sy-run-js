@@ -317,7 +317,7 @@ export default class RunJsPlugin extends Plugin {
         let code = block.content;
         console.log('Code Block:', block.id);
         console.log(code);
-        this.runJsCode(code);
+        this.runJsCode(code, block);
         console.groupEnd();
     }
 
@@ -325,12 +325,12 @@ export default class RunJsPlugin extends Plugin {
      * 运行指定的代码
      * @param code string, 代码字符串
      */
-    public async runJsCode(code: string) {
+    public async runJsCode(code: string, codeBlock?: Block) {
         let func = new Function(
             'siyuan', 'client', 'api', 'plugin', 'thisBlock',
             code
         );
-        return func(siyuan, client, api, this, null);
+        return func(siyuan, client, api, this, codeBlock);
     }
 
     private showTopbarMenu(rect?: DOMRect) {
