@@ -18,6 +18,13 @@
 - Add run button to code block
   See `plugin.createRunButton` API
 
+- Register some api interfaces under `globalThis`/`window`
+
+  You can visit `window.runJs` to use them (like open-api plugin)
+
+  ![](asset/globalThis.png)
+
+
 ## Available APIs
 
 - `siyuan`: The `siyuan` module of the plugin
@@ -92,10 +99,10 @@ console.log(plugin);
 console.log(client);
 console.log(thisBlock);
 async function main() {
-  const response = await client.pushMsg({
-     msg: "This is a notification message", timeout: 7000,
-  });
-  console.log(response);
+    const response = await client.pushMsg({
+      msg: "This is a notification message", timeout: 7000,
+    });
+    console.log(response);
 }
 main();
 plugin.saveAction(thisBlock.id, "Test Code");
@@ -133,8 +140,8 @@ Note the `args` variable, which will be an array of arguments passed in when the
 
 ```js
 const main = async () => {
-  let ans = await plugin.call('getActiveDoc', 'parameter1', 'parameter2');
-  siyuan.showMessage("Current Document:" + ans, 5000);
+    let ans = await plugin.call('getActiveDoc', 'parameter1', 'parameter2');
+    siyuan.showMessage("Current Document:" + ans, 5000);
 }
 main();
 ```
@@ -156,12 +163,12 @@ interface MyEventBusMap extends IEventBusMap {
 2. `run-js-code`, input parameter is a js code string, run the specified code.
 
 ```ts
-let bus = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-run-js')?.eventBus;
+let bus = window?.runJs.plugin.eventBus;
 if (bus) {
-  bus.emit("run-code-block", blockID);
-  bus.emit("run-js-code", `
-    console.log("Hello world");
-  `);
+    bus.emit("run-code-block", blockID);
+    bus.emit("run-js-code", `
+      console.log("Hello world");
+    `);
 }
 ```
 

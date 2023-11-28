@@ -17,6 +17,12 @@
 - 为代码块添加运行按钮
   见 `plugin.createRunButton` API
 
+- 将一些接口注册到 `globalThis`/`window` 下
+
+  访问 `window.runJs` 可以看到所有插件提供的额外 API (可以视为 open-api 插件的升级版)
+
+  ![](asset/globalThis.png)
+
 ## 可用的 API
 
 - `siyuan`: 插件的 `siyuan` module
@@ -91,10 +97,10 @@ console.log(plugin);
 console.log(client);
 console.log(thisBlock);
 async function main() {
-  const response = await client.pushMsg({
-     msg: "This is a notification message", timeout: 7000,
-  });
-  console.log(response);
+    const response = await client.pushMsg({
+      msg: "This is a notification message", timeout: 7000,
+    });
+    console.log(response);
 }
 main();
 plugin.saveAction(thisBlock.id, "Test Code");
@@ -131,8 +137,8 @@ return getActiveDoc();
 
 ```js
 const main = async () => {
-  let ans = await plugin.call('getActiveDoc', '参数1', '参数2');
-  siyuan.showMessage("Current Document:" + ans, 5000);
+    let ans = await plugin.call('getActiveDoc', '参数1', '参数2');
+    siyuan.showMessage("Current Document:" + ans, 5000);
 }
 main();
 ```
@@ -154,12 +160,12 @@ interface MyEventBusMap extends IEventBusMap {
 2. `run-js-code`, 输入参数为 js 代码字符串，运行指定的代码
 
 ```ts
-let bus = window.siyuan.ws.app.plugins.find(p => p.name === 'sy-run-js')?.eventBus;
+let bus = window?.runJs.plugin.eventBus;
 if (bus) {
-  bus.emit("run-code-block", blockID);
-  bus.emit("run-js-code", `
-    console.log("Hello world");
-  `);
+    bus.emit("run-code-block", blockID);
+    bus.emit("run-js-code", `
+      console.log("Hello world");
+    `);
 }
 ```
 
