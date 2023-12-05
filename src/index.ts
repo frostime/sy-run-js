@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-05 20:24:42
+ * @LastEditTime : 2023-12-05 20:32:47
  * @Description  : 
  */
 import {
@@ -17,7 +17,9 @@ import {
     IMenuItemOption
 } from "siyuan";
 import siyuan from "siyuan";
-import "@/index.scss";
+// import "@/index.scss";
+import { changelog } from 'sy-plugin-changelog';
+
 
 import * as api from "@/api";
 
@@ -215,6 +217,12 @@ export default class RunJsPlugin extends Plugin {
         await Promise.all([this.loadData(SAVED_CODE), this.loadData(CALLABLE)]);
         this.data[SAVED_CODE] = this.data[SAVED_CODE] || {};
         this.data[CALLABLE] = this.data[CALLABLE] || {};
+
+        changelog(this, 'i18n/CHANGELOG.md').then((result) => {
+            let dialog = result.Dialog;
+            dialog.setSize({width: '50em', height: '35em'})
+            dialog.setFont('1.2rem');
+        });
     }
 
     onunload() {
