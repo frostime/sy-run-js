@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-05 20:21:58
+ * @LastEditTime : 2023-12-05 20:24:42
  * @Description  : 
  */
 import {
@@ -359,7 +359,7 @@ export default class RunJsPlugin extends Plugin {
 
     public async runCodeBlock(id: BlockId) {
         let block = await api.getBlockByID(id);
-        console.group("Run Javascript Code Block");
+        console.group(`Run Javascript Code Block ${block.id}`);
         if (!block) {
             console.error("Code Block ", id, " Not Found");
             showMessage(`Code Block Not Found`);
@@ -373,7 +373,6 @@ export default class RunJsPlugin extends Plugin {
             return;
         }
         let code = block.content;
-        console.log('Run Code Block:', block.id);
         console.debug(code);
         this.runJsCode(code, block);
         console.groupEnd();
