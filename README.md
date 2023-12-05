@@ -66,6 +66,18 @@
   public async runJsCode(code: string)
   ```
 
+- `runJsCodeAsync`
+
+  Alis to `runJsCode``
+
+- `runJsCodeSync`
+
+  ```ts
+  public runJsCodeSync(code: string)
+  ```
+
+  Run code in sync mode
+
 
 - `createRunButton`
 

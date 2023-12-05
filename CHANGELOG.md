@@ -1,6 +1,6 @@
 ## v0.5.0
 
-- 支持 sync/async 两种运行模式
+- 支持 `RunJsCode` 的 sync/async 两种运行模式
 - 更新 siyuan-sdk
 
 ## v0.3.0

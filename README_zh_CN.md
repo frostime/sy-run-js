@@ -64,6 +64,20 @@
   public async runJsCode(code: string)
   ```
 
+  运行代码, 为 `async` 模式
+
+- `runJsCodeAsync`
+
+  同 `runJsCode``
+
+- `runJsCodeSync`
+
+  ```ts
+  public runJsCodeSync(code: string)
+  ```
+
+  运行代码, sync 模式
+
 - `createRunButton`
 
   ```ts
