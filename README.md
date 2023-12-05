@@ -2,9 +2,13 @@
 ## Basic Operations
 
 - Run code block
+
   1. Create a new JavaScript code block
   2. Click "Block Menu -> Run JS -> Run it"
   3. The plugin will automatically run the code in the code block
+
+- `Alt+F5` hotkey run js block
+
 - Register code block to the top bar button
 
   - Way 1: Click "Block Menu -> Run JS -> Save to topbar"
@@ -65,6 +69,18 @@
   ```ts
   public async runJsCode(code: string)
   ```
+
+- `runJsCodeAsync`
+
+  Alis to `runJsCode``
+
+- `runJsCodeSync`
+
+  ```ts
+  public runJsCodeSync(code: string)
+  ```
+
+  Run code in sync mode
 
 
 - `createRunButton`

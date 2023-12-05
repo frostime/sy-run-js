@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-11-28 14:01:53
+ * @LastEditTime : 2023-12-05 20:32:47
  * @Description  : 
  */
 import {
@@ -17,7 +17,9 @@ import {
     IMenuItemOption
 } from "siyuan";
 import siyuan from "siyuan";
-import "@/index.scss";
+// import "@/index.scss";
+import { changelog } from 'sy-plugin-changelog';
+
 
 import * as api from "@/api";
 
@@ -108,6 +110,39 @@ const ButtonTemplate = {
     }
 };
 
+/**
+ * Copyright (c) 2023 [Zuoqiu-Yingyi](https://github.com/Zuoqiu-Yingyi/siyuan-packages-monorepo)
+ * 判断一个元素是否为思源块元素
+ * @param element 元素
+ * @returns 是否为思源块元素
+ */
+export function isSiyuanBlock(element: any): boolean {
+    return !!(element
+        && element instanceof HTMLElement
+        && element.dataset.type
+        && element.dataset.nodeId
+        && /^\d{14}-[0-9a-z]{7}$/.test(element.dataset.nodeId)
+    );
+}
+
+/**
+ * Copyright (c) 2023 [Zuoqiu-Yingyi](https://github.com/Zuoqiu-Yingyi/siyuan-packages-monorepo)
+ * 获取当前光标所在的块
+ * @returns 当前光标所在的块的 HTML 元素
+ */
+export function getFocusedBlock(): HTMLElement | null | undefined {
+    const selection = document.getSelection();
+    let element = selection?.focusNode;
+    while (element // 元素存在
+        && (!(element instanceof HTMLElement) // 元素非 HTMLElement
+            || !isSiyuanBlock(element) // 元素非思源块元素
+        )
+    ) {
+        element = element.parentElement;
+    }
+    return element as HTMLElement;
+}
+
 export default class RunJsPlugin extends Plugin {
 
     private static readonly GLOBAL: Record<string, any> = globalThis;
@@ -167,9 +202,27 @@ export default class RunJsPlugin extends Plugin {
             this.runJsCode(detail);
         });
 
+        this.addCommand({
+            langKey: "run-js-block",
+            hotkey: "⌥F5",
+            editorCallback: async () => {
+                console.log("run-js-block");
+                let ele: HTMLElement = getFocusedBlock();
+                let dataId = ele.getAttribute("data-node-id");
+                console.log("dataId", dataId);
+                this.runCodeBlock(dataId);
+            }
+        });
+
         await Promise.all([this.loadData(SAVED_CODE), this.loadData(CALLABLE)]);
         this.data[SAVED_CODE] = this.data[SAVED_CODE] || {};
         this.data[CALLABLE] = this.data[CALLABLE] || {};
+
+        changelog(this, 'i18n/CHANGELOG.md').then((result) => {
+            let dialog = result.Dialog;
+            dialog.setSize({width: '50em', height: '35em'})
+            dialog.setFont('1.2rem');
+        });
     }
 
     onunload() {
@@ -314,7 +367,7 @@ export default class RunJsPlugin extends Plugin {
 
     public async runCodeBlock(id: BlockId) {
         let block = await api.getBlockByID(id);
-        console.group("Run Javascript Code Block");
+        console.group(`Run Javascript Code Block ${block.id}`);
         if (!block) {
             console.error("Code Block ", id, " Not Found");
             showMessage(`Code Block Not Found`);
@@ -328,8 +381,7 @@ export default class RunJsPlugin extends Plugin {
             return;
         }
         let code = block.content;
-        console.log('Code Block:', block.id);
-        console.log(code);
+        console.debug(code);
         this.runJsCode(code, block);
         console.groupEnd();
     }
@@ -339,6 +391,16 @@ export default class RunJsPlugin extends Plugin {
      * @param code string, 代码字符串
      */
     public async runJsCode(code: string, codeBlock?: Block) {
+        let func = new Function(
+            'siyuan', 'client', 'api', 'plugin', 'thisBlock',
+            code
+        );
+        return func(siyuan, client, api, this, codeBlock);
+    }
+
+    public runJsCodeAsync = this.runJsCode;
+
+    public runJsCodeSync(code: string, codeBlock?: Block) {
         let func = new Function(
             'siyuan', 'client', 'api', 'plugin', 'thisBlock',
             code

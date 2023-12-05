@@ -1,9 +1,13 @@
 ## 基本操作
 
 - 运行代码块
+
   1. 新建一个 javascript 代码块
   2. 点击「块菜单——>Run JS——>运行代码」
   3. 插件将自动运行代码块中的代码
+
+- 快捷键运行 Js 代码块 `Alt+F5`
+
 - 将代码块注册到顶栏按钮
 
   - 方案1: 点击「块菜单——>Run JS——>添加到顶栏」
@@ -63,6 +67,20 @@
   ```ts
   public async runJsCode(code: string)
   ```
+
+  运行代码, 为 `async` 模式
+
+- `runJsCodeAsync`
+
+  同 `runJsCode``
+
+- `runJsCodeSync`
+
+  ```ts
+  public runJsCodeSync(code: string)
+  ```
+
+  运行代码, sync 模式
 
 - `createRunButton`
 
