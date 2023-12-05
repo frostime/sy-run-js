@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-05 20:04:21
+ * @LastEditTime : 2023-12-05 20:21:58
  * @Description  : 
  */
 import {
@@ -108,6 +108,39 @@ const ButtonTemplate = {
     }
 };
 
+/**
+ * Copyright (c) 2023 [Zuoqiu-Yingyi](https://github.com/Zuoqiu-Yingyi/siyuan-packages-monorepo)
+ * 判断一个元素是否为思源块元素
+ * @param element 元素
+ * @returns 是否为思源块元素
+ */
+export function isSiyuanBlock(element: any): boolean {
+    return !!(element
+        && element instanceof HTMLElement
+        && element.dataset.type
+        && element.dataset.nodeId
+        && /^\d{14}-[0-9a-z]{7}$/.test(element.dataset.nodeId)
+    );
+}
+
+/**
+ * Copyright (c) 2023 [Zuoqiu-Yingyi](https://github.com/Zuoqiu-Yingyi/siyuan-packages-monorepo)
+ * 获取当前光标所在的块
+ * @returns 当前光标所在的块的 HTML 元素
+ */
+export function getFocusedBlock(): HTMLElement | null | undefined {
+    const selection = document.getSelection();
+    let element = selection?.focusNode;
+    while (element // 元素存在
+        && (!(element instanceof HTMLElement) // 元素非 HTMLElement
+            || !isSiyuanBlock(element) // 元素非思源块元素
+        )
+    ) {
+        element = element.parentElement;
+    }
+    return element as HTMLElement;
+}
+
 export default class RunJsPlugin extends Plugin {
 
     private static readonly GLOBAL: Record<string, any> = globalThis;
@@ -165,6 +198,18 @@ export default class RunJsPlugin extends Plugin {
         });
         this.eventBus.on("run-js-code", ({detail}) => {
             this.runJsCode(detail);
+        });
+
+        this.addCommand({
+            langKey: "run-js-block",
+            hotkey: "⌥F5",
+            editorCallback: async () => {
+                console.log("run-js-block");
+                let ele: HTMLElement = getFocusedBlock();
+                let dataId = ele.getAttribute("data-node-id");
+                console.log("dataId", dataId);
+                this.runCodeBlock(dataId);
+            }
         });
 
         await Promise.all([this.loadData(SAVED_CODE), this.loadData(CALLABLE)]);
@@ -328,8 +373,8 @@ export default class RunJsPlugin extends Plugin {
             return;
         }
         let code = block.content;
-        console.log('Code Block:', block.id);
-        console.log(code);
+        console.log('Run Code Block:', block.id);
+        console.debug(code);
         this.runJsCode(code, block);
         console.groupEnd();
     }
