@@ -220,8 +220,11 @@ export default class RunJsPlugin extends Plugin {
 
         changelog(this, 'i18n/CHANGELOG.md').then((result) => {
             let dialog = result.Dialog;
-            dialog.setSize({width: '50em', height: '35em'})
-            dialog.setFont('1.2rem');
+            if (dialog) {
+                // dialog?.setSize({width: '50em', height: '35em'})
+                dialog?.setSize({width: '30em', height: '20em'})
+                dialog?.setFont('1.2rem');
+            }
         });
     }
 

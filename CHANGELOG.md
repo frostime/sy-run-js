@@ -1,3 +1,7 @@
+## v0.5.1
+
+Fix some loading bugs.
+
 ## v0.5.0
 
 - 增加快捷键 `Alt+F5` 快速运行鼠标焦点的代码块
