@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-05 20:32:47
+ * @LastEditTime : 2023-12-09 22:25:41
  * @Description  : 
  */
 import {
@@ -395,20 +395,20 @@ export default class RunJsPlugin extends Plugin {
      */
     public async runJsCode(code: string, codeBlock?: Block) {
         let func = new Function(
-            'siyuan', 'client', 'api', 'plugin', 'thisBlock',
+            'siyuan', 'client', 'api', 'plugin', 'thisBlock', 'args',
             code
         );
-        return func(siyuan, client, api, this, codeBlock);
+        return func(siyuan, client, api, this, codeBlock, []);
     }
 
     public runJsCodeAsync = this.runJsCode;
 
     public runJsCodeSync(code: string, codeBlock?: Block) {
         let func = new Function(
-            'siyuan', 'client', 'api', 'plugin', 'thisBlock',
+            'siyuan', 'client', 'api', 'plugin', 'thisBlock', 'args',
             code
         );
-        return func(siyuan, client, api, this, codeBlock);
+        return func(siyuan, client, api, this, codeBlock, []);
     }
 
     private showTopbarMenu(rect?: DOMRect) {

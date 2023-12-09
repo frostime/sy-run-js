@@ -34,7 +34,9 @@
 - `siyuan`: The `siyuan` module of the plugin
 - `plugin`: The `this` object of this plugin
 - `thisBlock`: The block object of the code block itself
+- `args`: Argument list when use `plugin.call`, or empty list `[]`
 - `client`: A `client` instance from [@siyuan-community/siyuan-sdk](https://github.com/siyuan-community/siyuan-sdk/tree/main/node)
+- `api`: Refer to [plugin-sample-vite](https://github.com/frostime/plugin-sample-vite/blob/main/src/api.ts)
 
 ### plugin APIs
 

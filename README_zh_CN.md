@@ -32,7 +32,10 @@
 - `siyuan`: 插件的 `siyuan` module
 - `plugin`: 本插件的 `this` 对象
 - `thisBlock`: 代码块本身的 block 对象
+- `args`: 调用 `plugin.call` 的时候传入的参数列表, 正常运行脚本时为空列表 `[]`
 - `client`: 一个 [@siyuan-community/siyuan-sdk](https://github.com/siyuan-community/siyuan-sdk/tree/main/node) 的 `client` 实例
+- `api`: 类型 `client`, 是封装了一部分内核 API 函数的一个对象, 见 [plugin-sample-vite](https://github.com/frostime/plugin-sample-vite/blob/main/src/api.ts)
+
 
 ### plugin api
 
