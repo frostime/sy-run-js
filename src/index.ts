@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-09 22:25:41
+ * @LastEditTime : 2023-12-09 22:30:23
  * @Description  : 
  */
 import {
@@ -218,14 +218,14 @@ export default class RunJsPlugin extends Plugin {
         this.data[SAVED_CODE] = this.data[SAVED_CODE] || {};
         this.data[CALLABLE] = this.data[CALLABLE] || {};
 
-        changelog(this, 'i18n/CHANGELOG.md').then((result) => {
-            let dialog = result.Dialog;
-            if (dialog) {
-                // dialog?.setSize({width: '50em', height: '35em'})
-                dialog?.setSize({width: '30em', height: '20em'})
-                dialog?.setFont('1.2rem');
-            }
-        });
+        // changelog(this, 'i18n/CHANGELOG.md').then((result) => {
+        //     let dialog = result.Dialog;
+        //     if (dialog) {
+        //         // dialog?.setSize({width: '50em', height: '35em'})
+        //         dialog?.setSize({width: '30em', height: '20em'})
+        //         dialog?.setFont('1.2rem');
+        //     }
+        // });
     }
 
     onunload() {
