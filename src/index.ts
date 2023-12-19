@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-19 22:27:49
+ * @LastEditTime : 2023-12-19 22:50:31
  * @Description  : 
  */
 import {
@@ -14,6 +14,7 @@ import {
     Menu,
     EventBus,
     IEventBusMap,
+    Protyle,
     IMenuItemOption
 } from "siyuan";
 import siyuan from "siyuan";
@@ -105,8 +106,8 @@ const ButtonTemplate = {
     new(text: string, id: BlockId) {
         let funcname = `Run_${id.replace(/-/g, "_")}`
         return this.template.replace(/{{text}}/g, text)
-                            .replace(/{{id}}/g, id)
-                            .replace(/{{funcname}}/g, funcname);
+            .replace(/{{id}}/g, id)
+            .replace(/{{funcname}}/g, funcname);
     }
 };
 
@@ -156,7 +157,7 @@ export default class RunJsPlugin extends Plugin {
     };
     declare eventBus: MyEventBus;
 
-    BindEvent: {[key: string]: (event: CustomEvent<any>) => any} = {};
+    BindEvent: { [key: string]: (event: CustomEvent<any>) => any } = {};
 
     async onload() {
 
@@ -200,7 +201,7 @@ export default class RunJsPlugin extends Plugin {
         this.eventBus.on("run-code-block", ({ detail }) => {
             this.runCodeBlock(detail);
         });
-        this.eventBus.on("run-js-code", ({detail}) => {
+        this.eventBus.on("run-js-code", ({ detail }) => {
             this.runJsCode(detail);
         });
 
@@ -317,6 +318,23 @@ export default class RunJsPlugin extends Plugin {
             this.eventBus.off(event, this.BindEvent[event]);
             this.BindEvent[event] = undefined;
         }
+    }
+
+    public addProtyleSlash(slash: {
+        filter: string[],
+        html: string,
+        id: string,
+        callback(protyle: Protyle): void,
+    }) {
+        let found = this.protyleSlash.find(s => s.id === slash.id);
+        if (found) {
+            return;
+        }
+        this.protyleSlash.push(slash);
+    }
+
+    public removeProtyleSlash(id: string) {
+        this.protyleSlash = this.protyleSlash.filter(s => s.id !== id);
     }
 
     public async createRunButton(id: BlockId, title?: string) {
@@ -477,7 +495,7 @@ export default class RunJsPlugin extends Plugin {
         menu.addSeparator();
         let callSubmenu: IMenuItemOption[] = [];
         for (let [name, id] of Object.entries(this.data[CALLABLE])) {
-            let ele  = document.createElement("button");
+            let ele = document.createElement("button");
             ele.className = "b3-menu__item";
             ele.setAttribute("data-block-id", id as string);
             ele.innerHTML = `<span class="b3-menu__label">${name}</span><svg class="b3-menu__action action-remove" title="Remove"><use xlink:href="#iconClose"></use></svg>`;
