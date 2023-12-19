@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-09 22:30:23
+ * @LastEditTime : 2023-12-19 22:27:49
  * @Description  : 
  */
 import {
@@ -156,6 +156,8 @@ export default class RunJsPlugin extends Plugin {
     };
     declare eventBus: MyEventBus;
 
+    BindEvent: {[key: string]: (event: CustomEvent<any>) => any} = {};
+
     async onload() {
 
         //Copyright (c) 2023 by Zuoqiu-Yingyi
@@ -229,6 +231,10 @@ export default class RunJsPlugin extends Plugin {
     }
 
     onunload() {
+        for (let event in this.BindEvent) {
+            //@ts-ignore
+            this.eventBus.off(event, this.BindEvent[event]);
+        }
         this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
     }
 
@@ -295,6 +301,75 @@ export default class RunJsPlugin extends Plugin {
         this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
     }
 
+    public onEvent(event: any, func: (event: CustomEvent<any>) => any) {
+        if (this.BindEvent[event] === undefined) {
+            this.BindEvent[event] = func;
+            this.eventBus.on(event, func);
+        } else {
+            this.eventBus.off(event, this.BindEvent[event]);
+            this.BindEvent[event] = func;
+            this.eventBus.on(event, func);
+        }
+    }
+
+    public offEvent(event: any) {
+        if (this.BindEvent[event] !== undefined) {
+            this.eventBus.off(event, this.BindEvent[event]);
+            this.BindEvent[event] = undefined;
+        }
+    }
+
+    public async createRunButton(id: BlockId, title?: string) {
+        title = title || "Run";
+        let html = ButtonTemplate.new(title, id);
+        api.insertBlock("markdown", html, id);
+    }
+
+    public async runCodeBlock(id: BlockId) {
+        let block = await api.getBlockByID(id);
+        console.group(`Run Javascript Code Block ${block.id}`);
+        if (!block) {
+            console.error("Code Block ", id, " Not Found");
+            showMessage(`Code Block Not Found`);
+            console.groupEnd();
+            return;
+        }
+        if (block.type !== "c") {
+            console.error("Block ", id, " is not Code Block");
+            showMessage(`Block is not Code Block`);
+            console.groupEnd();
+            return;
+        }
+        let code = block.content;
+        console.debug(code);
+        this.runJsCode(code, block);
+        console.groupEnd();
+    }
+
+    /**
+     * 运行指定的代码
+     * @param code string, 代码字符串
+     */
+    public async runJsCode(code: string, codeBlock?: Block) {
+        let func = new Function(
+            'siyuan', 'client', 'api', 'plugin', 'thisBlock', 'args',
+            code
+        );
+        return func(siyuan, client, api, this, codeBlock, []);
+    }
+
+    public runJsCodeAsync = this.runJsCode;
+
+    public runJsCodeSync(code: string, codeBlock?: Block) {
+        let func = new Function(
+            'siyuan', 'client', 'api', 'plugin', 'thisBlock', 'args',
+            code
+        );
+        return func(siyuan, client, api, this, codeBlock, []);
+    }
+
+    /******************** Private ********************/
+
     private async blockIconEvent({ detail }: any) {
         if (detail.blockElements.length > 1) {
             return;
@@ -360,55 +435,6 @@ export default class RunJsPlugin extends Plugin {
             type: "submenu",
             submenu: submenus
         });
-    }
-
-    public async createRunButton(id: BlockId, title?: string) {
-        title = title || "Run";
-        let html = ButtonTemplate.new(title, id);
-        api.insertBlock("markdown", html, id);
-    }
-
-    public async runCodeBlock(id: BlockId) {
-        let block = await api.getBlockByID(id);
-        console.group(`Run Javascript Code Block ${block.id}`);
-        if (!block) {
-            console.error("Code Block ", id, " Not Found");
-            showMessage(`Code Block Not Found`);
-            console.groupEnd();
-            return;
-        }
-        if (block.type !== "c") {
-            console.error("Block ", id, " is not Code Block");
-            showMessage(`Block is not Code Block`);
-            console.groupEnd();
-            return;
-        }
-        let code = block.content;
-        console.debug(code);
-        this.runJsCode(code, block);
-        console.groupEnd();
-    }
-
-    /**
-     * 运行指定的代码
-     * @param code string, 代码字符串
-     */
-    public async runJsCode(code: string, codeBlock?: Block) {
-        let func = new Function(
-            'siyuan', 'client', 'api', 'plugin', 'thisBlock', 'args',
-            code
-        );
-        return func(siyuan, client, api, this, codeBlock, []);
-    }
-
-    public runJsCodeAsync = this.runJsCode;
-
-    public runJsCodeSync(code: string, codeBlock?: Block) {
-        let func = new Function(
-            'siyuan', 'client', 'api', 'plugin', 'thisBlock', 'args',
-            code
-        );
-        return func(siyuan, client, api, this, codeBlock, []);
     }
 
     private showTopbarMenu(rect?: DOMRect) {
