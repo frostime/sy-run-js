@@ -1,115 +1,16 @@
+The purpose of this plugin is to extend the capabilities of the plugin to the global scope, making it easier for users to develop "micro-plugins" within SiYuan to enhance its functionality.
 
-## Basic Operations
+## 1. Run a Code Block
 
-- Run code block
+### Basic Usage
 
-  1. Create a new JavaScript code block
-  2. Click "Block Menu -> Run JS -> Run it"
-  3. The plugin will automatically run the code in the code block
+1. Create a JavaScript code block.
+2. Click on "Block Menu -> Run JS -> Run Code".
+3. The plugin will automatically execute the code within the code block.
 
-- `Alt+F5` hotkey run js block
+In addition, you can also run JS code blocks using keyboard shortcuts. Simply place the cursor inside the code block and press `alt + F5` to run the current code block.
 
-- Register code block to the top bar button
-
-  - Way 1: Click "Block Menu -> Run JS -> Save to topbar"
-
-    You should set the name of the code block first
-
-  - Way 2: use `plugin.saveAction` API
-
-- Register code block as a callable module by other code blocks
-
-- Add run button to code block
-  See `plugin.createRunButton` API
-
-- Register some api interfaces under `globalThis`/`window`
-
-  You can visit `window.runJs` to use them (like open-api plugin)
-
-  ![](asset/globalThis.png)
-
-
-## Available APIs
-
-- `siyuan`: The `siyuan` module of the plugin
-- `plugin`: The `this` object of this plugin
-- `thisBlock`: The block object of the code block itself
-- `args`: Argument list when use `plugin.call`, or empty list `[]`
-- `client`: A `client` instance from [@siyuan-community/siyuan-sdk](https://github.com/siyuan-community/siyuan-sdk/tree/main/node)
-- `api`: Refer to [plugin-sample-vite](https://github.com/frostime/plugin-sample-vite/blob/main/src/api.ts)
-
-### plugin APIs
-
-- `saveAction`
-
-  ```ts
-  public saveAction(blockId: BlockId, title?: string, sort?: number)
-  ```
-
-  Save the code block with the specified block ID. The saved action can be triggered quickly through the top bar menu button.
-
-    - blockId: The ID of the code block to be saved
-    - title: Title. If left empty, use the block name. If the name is empty, use the block ID
-    - sort: Sorting
-
-- `removeAction`
-
-  ```ts
-  removeAction(blockId: BlockId)
-  ```
-
-  public Remove action
-
-- `runCodeBlock`
-
-  ```ts
-  public runCodeBlock(id: BlockId)
-  ```
-
-- `runJsCode`
-
-  ```ts
-  public async runJsCode(code: string)
-  ```
-
-- `runJsCodeAsync`
-
-  Alis to `runJsCode``
-
-- `runJsCodeSync`
-
-  ```ts
-  public runJsCodeSync(code: string)
-  ```
-
-  Run code in sync mode
-
-
-- `createRunButton`
-
-  ```ts
-  public createRunButton(id: BlockId, title?: string)
-  ```
-
-  Create a button, uppon the given code block, to quickly run the code block.
-
-  ```js
-  plugin.createRunButton(thisBlock.id);
-  ```
-
-  ![CreateRunButton](asset/createRunButton.png)
-
-- `call`
-
-  ```ts
-  public async call(callableId: string, ...args: any[]): Promise<any>
-  ```
-
-  Call the registered callable function
-
-  See details bellow
-
-## Example
+Here is a sample test case:
 
 ```js
 console.log(siyuan);
@@ -118,7 +19,8 @@ console.log(client);
 console.log(thisBlock);
 async function main() {
     const response = await client.pushMsg({
-      msg: "This is a notification message", timeout: 7000,
+      msg: "This is a notification message",
+      timeout: 7000,
     });
     console.log(response);
 }
@@ -126,68 +28,199 @@ main();
 plugin.saveAction(thisBlock.id, "Test Code");
 ```
 
-## Registering Code Blocks as Callable Methods
+In the plugin code block environment, several accessible objects are available:
 
-Click on the code block menu and select "Save as Callable" to convert the corresponding code block into a callable function. Here's an example:
+* `siyuan`: The `siyuan` module of the plugin.
+* `plugin`: The `this` object of the RunJs plugin.
+* `thisBlock`: The block object of the current code block.
+* `client`: An instance of `client` from [@siyuan-community/siyuan-sdk](https://github.com/siyuan-community/siyuan-sdk/tree/main/node).
+* `api`: An object that encapsulates some core API functions, see [plugin-sample-vite](https://github.com/frostime/plugin-sample-vite/blob/main/src/api.ts).
+* `args`: The list of parameters passed when calling `plugin.call`, which is an empty list `[]` during normal execution of the code block.
 
-1. First, create a code block that contains a return statement:
+### External APIs
+
+The following APIs can be called directly through the `plugin` object.
+
+* `runCodeBlock`
+
+  ```ts
+  public runCodeBlock(id: BlockId)
+  ```
+  Run a JavaScript block with the given ID.
+
+* `runJsCode`
+
+  ```ts
+  public async runJsCode(code: string): Promise<any>
+  ```
+
+  Run code asynchronously.
+* `runJsCodeAsync`
+
+  Same as `runJsCode`.
+* `runJsCodeSync`
+
+  ```ts
+  public runJsCodeSync(code: string): any
+  ```
+
+  Run code synchronously.
+
+
+## 2. Registering Code Blocks to the Top Bar
+
+To add the current block to the top bar for quick access, follow these steps: 
+
+1. Click on "Block Menu" -> "Run JS" -> "Add to Top Bar".
+2. Before adding it to the top bar, make sure to set the name of the code block.
+
+The following APIs can be called directly through the `plugin` object.
+
+* `saveAction`
+
+  ```ts
+  public saveAction(blockId: BlockId, title?: string, sort?: number)
+  ```
+
+  Save the code block with the specified `blockId`. The saved action can be triggered quickly through the top bar menu button.
+
+  - `blockId`: The ID of the specified code block.
+  - `title`: The title of the action. If left empty, the block name will be used. If the name is empty, the block ID will be used.
+  - `sort`: Sorting order.
+
+* `removeAction`
+
+  ```ts
+  public removeAction(blockId: BlockId)
+  ```
+
+  Remove the action.
+
+
+## 3. Registering Code Blocks as Callable Methods
+
+Sometimes, users may want their code blocks to be callable methods that can be used by other code blocks. In the plugin, you can use the `plugin.call(<name>)` syntax to call other code blocks as functions.
 
 ```js
-function getActiveDoc() {
-    let tab = document.querySelector("div.layout__wnd--active ul.layout-tab-bar>li.item--focus");
-    let dataId= tab?.getAttribute("data-id");
-    if (!dataId) {
-        return null;
+plugin.call("Func", "args1", "args2");
+```
+
+To register a code block as a callable "function", follow these steps:
+
+1. Create a new code block:
+
+    ```js
+    siyuan.showMessage(`${args[0]} say ${args[1]}`);
+    return 'ok!';
+    ```
+
+    Note the use of `args`, which will be an array of parameters passed when calling the function.
+
+2. Set the name of the code block as `Func`.
+3. Save it as a callable method.
+4. Call the `Func` function using the following format:
+
+    ```js
+    const main = async () => {
+        let ans = await plugin.call('Func', 'I', 'hello');
+        siyuan.showMessage("Return" + ans, 5000);
     }
-    const activeTab = document.querySelector(
-        `.layout-tab-container.fn__flex-1>div.protyle[data-id="${dataId}"]`
-    );
-    const eleTitle = activeTab?.querySelector(".protyle-title");
-    let docId = eleTitle?.getAttribute("data-node-id");
-    return docId;
-}
-console.log(args);
-return getActiveDoc();
+    main();
+    ```
+
+The following API can be called directly through the `plugin` object:
+
+```ts
+public async call(callableId: string, ...args: any[]): Promise<any>
 ```
 
-Note the `args` variable, which will be an array of arguments passed in when the function is called.
+## 4. `globalThis.runJs`
 
-2. Name the code block `GetActiveDoc`.
-3. Save it as a callable function.
-4. Use `plugin.call("GetActiveDoc", ...args)` to call the function. The `call` method returns a Promise, so if you need to `await` it, you must call it within an `async` function.
+For greater flexibility, this plugin exposes a `runJs` object in the global scope. You can directly access the `runJs` object in the console, which contains all the objects exposed to code blocks (except `args` and `thisBlock`).
+
+![](./asset/globalThis.png)
+
+With the `runJs` object, you can even use it in SiYuan's built-in code snippets to automatically execute certain functionalities when SiYuan starts. Here's an example that you can try by placing it in SiYuan's settings under "Appearance" -> "Code Snippets" -> "JS":
 
 ```js
-const main = async () => {
-    let ans = await plugin.call('getActiveDoc', 'parameter1', 'parameter2');
-    siyuan.showMessage("Current Document:" + ans, 5000);
-}
-main();
+runJs.siyuan.showMessage('Hello from code snippet!', 3000);
 ```
 
-At runtime, `'parameter1'` and `'parameter2'` will be combined into the `args` array.
+This will display a message in SiYuan for 3 seconds when SiYuan starts.
 
-## EventBus
+Note: The `runJs` object is not available for use within code blocks. It is meant for use in SiYuan's built-in code snippets and the console.
 
-The plugin extends `eventBus` to add events that can be called externally.
+```js
+const waitForRunJs = async (maxAttempts) => {
+  let attempts = 0;
+
+  while (attempts < maxAttempts) {
+    if (globalThis?.runJs !== undefined) {
+      console.debug("Detect runJS!");
+      return true;
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 5000);
+    });
+
+    attempts++;
+  }
+  return false;
+};
+
+waitForRunJs(5).then((flag) => {
+    if (flag === false) return;
+    //Your code here...
+    runJs.siyuan.showMessage("Hello!");
+});
+```
+
+
+
+## 5. Binding to SiYuan's Event Bus
+
+The `plugin` object of RunJs provides two methods for binding and unbinding event handlers to/from SiYuan's event bus:
+
+* `onEvent`
+
+  ````ts
+  public onEvent(event: any, func: (event: CustomEvent<any>) => any)
+  ```
+
+* `offEvent`
+
+  ````ts
+  public offEvent(event: any)
+  ```
+
+These two methods work similarly to the `plugin.eventBus.on` and `off` methods but provide a safer and more convenient way to use them. When calling the `onEvent` method repeatedly, the plugin will automatically unregister the previous event handlers. Additionally, when the plugin is unloaded (`onunload`), it will automatically unregister all event handlers bound using this interface.
+
+
+## Other APIs
+
+### protyleSlash
 
 ```ts
-interface MyEventBusMap extends IEventBusMap {
-    'run-code-block': BlockId;
-    'run-js-code': string;
-}
+public addProtyleSlash(slash: {
+    filter: string[],
+    html: string,
+    id: string,
+    callback(protyle: Protyle): void,
+})
+
+public removeProtyleSlash(id: string)
 ```
 
-1. `run-code-block`, input parameter is BlockID, run the js code block with specified ID.
-2. `run-js-code`, input parameter is a js code string, run the specified code.
+This API allows you to add a `/` menu item to your plugin. The `addProtyleSlash` method automatically checks if the `id` is already used.
+
+### `createRunButton`
 
 ```ts
-let bus = window?.runJs.plugin.eventBus;
-if (bus) {
-    bus.emit("run-code-block", blockID);
-    bus.emit("run-js-code", `
-      console.log("Hello world");
-    `);
-}
+public async createRunButton(id: BlockId, title?: string)
 ```
 
-> But you can actually call the `plugin.runCodeBlock` and `plugin.runJsCode` functions directly without using eventBus.
+
+Pass the ID of the JavaScript block (`id`) and an optional title for the button (`title`).
+
+![CreateRunButton](asset/createRunButton.png)
+

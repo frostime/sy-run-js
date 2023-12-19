@@ -1,116 +1,16 @@
-## 基本操作
+本插件的意义在于，将插件的一些能力扩展到全局，从而方便用户在思源内部就能开发一些「微插件」来增强思源的功能。
 
-- 运行代码块
+## 1. 运行一个代码块
 
-  1. 新建一个 javascript 代码块
-  2. 点击「块菜单——>Run JS——>运行代码」
-  3. 插件将自动运行代码块中的代码
+### 基本用法
 
-- 快捷键运行 Js 代码块 `Alt+F5`
+1. 新建一个 javascript 代码块
+2. 点击「块菜单——>Run JS——> 运行代码」
+3. 插件将自动运行代码块中的代码
 
-- 将代码块注册到顶栏按钮
+除此之外，插件还可以通过快捷键方式来运行 js 代码块，将光标聚焦在代码块中，然后按 `alt + F5` 即可运行当前的代码块。
 
-  - 方案1: 点击「块菜单——>Run JS——>添加到顶栏」
-
-    方案1需要设置代码块的名称
-
-  - 方案2:`plugin.saveAction` API
-
-- 将代码块注册为一个可供其他代码块调用的 Callable 模块
-
-- 为代码块添加运行按钮
-  见 `plugin.createRunButton` API
-
-- 将一些接口注册到 `globalThis`/`window` 下
-
-  访问 `window.runJs` 可以看到所有插件提供的额外 API (可以视为 open-api 插件的升级版)
-
-  ![](asset/globalThis.png)
-
-## 可用的 API
-
-- `siyuan`: 插件的 `siyuan` module
-- `plugin`: 本插件的 `this` 对象
-- `thisBlock`: 代码块本身的 block 对象
-- `args`: 调用 `plugin.call` 的时候传入的参数列表, 正常运行脚本时为空列表 `[]`
-- `client`: 一个 [@siyuan-community/siyuan-sdk](https://github.com/siyuan-community/siyuan-sdk/tree/main/node) 的 `client` 实例
-- `api`: 是封装了一部分内核 API 函数的一个对象, 见 [plugin-sample-vite](https://github.com/frostime/plugin-sample-vite/blob/main/src/api.ts)
-
-
-### plugin api
-
-- `saveAction`
-
-  ```ts
-  public saveAction(blockId: BlockId, title?: string, sort?: number)
-  ```
-
-  将指定 blockid 的 codeblock 保存, 保存的 action 可以通过顶栏菜单按钮来快速触发
-
-    - blockId: 指定 codeblock 的 id
-    - title: 标题, 如果留空，则使用块命名，如果命名为空，使用块 ID
-    - sort: 排序
-
-- `removeAction`
-
-  ```ts
-  public removeAction(blockId: BlockId)
-  ```
-
-  删除 action
-
-- `runCodeBlock`
-
-  ```ts
-  public runCodeBlock(id: BlockId)
-  ```
-
-- `runJsCode`
-
-  ```ts
-  public async runJsCode(code: string)
-  ```
-
-  运行代码, 为 `async` 模式
-
-- `runJsCodeAsync`
-
-  同 `runJsCode``
-
-- `runJsCodeSync`
-
-  ```ts
-  public runJsCodeSync(code: string)
-  ```
-
-  运行代码, sync 模式
-
-- `createRunButton`
-
-  ```ts
-  public createRunButton(id: BlockId, title?: string)
-  ```
-
-  创建一个能快速运行相应代码块的按钮
-
-  ```js
-  plugin.createRunButton(thisBlock.id);
-  ```
-
-  ![CreateRunButton](asset/createRunButton.png)
-
-
-- `call`
-
-  ```ts
-  public async call(callableId: string, ...args: any[]): Promise<any>
-  ```
-
-  调用注册的方法代码块
-
-  详情见下方
-
-## 样例
+以下是一个测试样例：
 
 ```js
 console.log(siyuan);
@@ -127,67 +27,194 @@ main();
 plugin.saveAction(thisBlock.id, "Test Code");
 ```
 
-## 将代码块注册为可调用的方法
+插件的代码块环境中，提供了若干个可访问的对象：
 
-点击代码块菜单，选择 "保存为可调用方法"，可以将对应代码块转换为一个可以被调用的。示例如下：
+* `siyuan`: 插件的 `siyuan` module
+* `plugin`: RunJs 插件的 `this` 对象
+* `thisBlock`: 当前代码块本身的 block 对象
+* `client`: 一个 [@siyuan-community/siyuan-sdk](https://github.com/siyuan-community/siyuan-sdk/tree/main/node) 的 `client` 实例
+* `api`: 是封装了一部分内核 API 函数的一个对象, 见 [plugin-sample-vite](https://github.com/frostime/plugin-sample-vite/blob/main/src/api.ts)
+* `args`: 调用 `plugin.call` 的时候传入的参数列表, 在正常运行代码块时为空列表 `[]`
 
-1. 首先新建一个包含了 return 语句的代码块
+### 对外 API
+
+以下 API，可以通过 `plugin` 对象直接调用
+
+* `runCodeBlock`
+
+  ```ts
+  public runCodeBlock(id: BlockId)
+  ```
+
+  传入一个 js 块的 ID，并运行他
+* `runJsCode`
+
+  ```ts
+  public async runJsCode(code: string): Promise<any>
+  ```
+
+  运行代码, 为 `async` 模式
+* `runJsCodeAsync`
+
+  同 `runJsCode`
+* `runJsCodeSync`
+
+  ```ts
+  public runJsCodeSync(code: string): any
+  ```
+
+  运行代码, sync 模式
+
+
+## 2. 将代码块注册到顶栏
+
+点击「块菜单——>Run JS——> 添加到顶栏」，可以将当前的块添加到顶栏按钮中，以方便快速触发。
+
+需要注意，在添加到顶栏之前，需要设置代码块的名称（name）。
+
+
+以下 API，可以通过 `plugin` 对象直接调用
+
+* `saveAction`
+
+  ```ts
+  public saveAction(blockId: BlockId, title?: string, sort?: number)
+  ```
+
+  将指定 blockid 的 codeblock 保存, 保存的 action 可以通过顶栏菜单按钮来快速触发
+
+  * blockId: 指定 codeblock 的 id
+  * title: 标题, 如果留空，则使用块命名，如果命名为空，使用块 ID
+  * sort: 排序
+
+* `removeAction`
+
+  ```ts
+  public removeAction(blockId: BlockId)
+  ```
+
+  删除 action
+
+
+
+## 3. 将代码块注册为可调用的方法
+
+有时候，用户可能希望自己的某个代码块可以作为一个可以被调用的方法，被其他代码块使用。在插件中，可以使用 `plugin.call(<name>)` 的形式将别的代码块作为函数来调用。
 
 ```js
-function getActiveDoc() {
-    let tab = document.querySelector("div.layout__wnd--active ul.layout-tab-bar>li.item--focus");
-    let dataId= tab?.getAttribute("data-id");
-    if (!dataId) {
-        return null;
-    }
-    const activeTab = document.querySelector(
-        `.layout-tab-container.fn__flex-1>div.protyle[data-id="${dataId}"]`
-    );
-    const eleTitle = activeTab?.querySelector(".protyle-title");
-    let docId = eleTitle?.getAttribute("data-node-id");
-    return docId;
-}
-console.log(args);
-return getActiveDoc();
+plugin.call("Func", "args1", "args2");
 ```
-注意到 `args`, 这个将是调用的时候传入的参数组成的数组.
 
-2. 将代码块命名为 `GetActiveDoc`
+为了将一个代码块注册为一个可以被调用的“函数”，点击代码块菜单，选择 "保存为可调用方法"。
+
+需要注意，在保存为 可调用方法（Callable）之前，需要设置代码块的名称（name）。
+
+以下是一个示例：
+
+1. 首先新建一个代码块
+
+    ```js
+    siyuan.showMessage(`${args[0]} say ${args[1]}`);
+    return 'ok!';
+    ```
+
+    注意到 `args`, 这个将是调用的时候传入的参数组成的数组.
+2. 将代码块命名为 `Func`
 3. 保存为可调用的函数
-4. 使用 `plugin.call("GetActiveDoc", ...args)` 来调用。 call 返回的对象为一个 Promise, 所以如果需要 await, 必须把它包裹在一个 async 函数当中调用。
+4. 通过以下形式来调用这个 `Func` 函数
+
+    ```js
+    const main = async () => {
+        let ans = await plugin.call('Func', 'I', 'hello');
+        siyuan.showMessage("Return" + ans, 5000);
+    }
+    main();
+    ```
+
+
+以下 API，可以通过 `plugin` 对象直接调用
+
+```ts
+public async call(callableId: string, ...args: any[]): Promise<any>
+```
+
+
+## 4. `globalThis.runJs`
+
+为了方便更灵活的使用，本插件将一个 `runJs` 对象暴露在全局。你可以直接在控制台中访问 `runJs` 对象，其中包含了暴露给代码块的所有对象（除了 `args` 和 `thisBlock`）。
+
+![](./asset/globalThis.png)
+
+
+有了 runJs 对象后，你甚至可以在思源内置的代码片段中使用他，从而在思源启动的时候自动执行一些功能。以下是一个示例，你可以将它放入思源设置的「外观——代码片段——JS」中看看效果。
 
 ```js
-const main = async () => {
-    let ans = await plugin.call('getActiveDoc', '参数1', '参数2');
-    siyuan.showMessage("Current Document:" + ans, 5000);
-}
-main();
+const waitForRunJs = async (maxAttempts) => {
+  let attempts = 0;
+
+  while (attempts < maxAttempts) {
+    if (globalThis?.runJs !== undefined) {
+      console.debug("Detect runJS!");
+      return true;
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 5000);
+    });
+
+    attempts++;
+  }
+  return false;
+};
+
+waitForRunJs(5).then((flag) => {
+    if (flag === false) return;
+    //Your code here...
+    runJs.siyuan.showMessage("Hello!");
+});
 ```
-运行时 '参数1', '参数2' 将会组成 `args` 数组。
 
 
-## EventBus
+## 5. 绑定思源的事件总线
 
-插件拓展了 `eventBus`，增加了外部可以调用的事件
+RunJs 的 `plugin` 对外暴露了两个方法，用于绑定和解绑来自思源的总线事件
+
+* `onEvent`
+
+  ```ts
+  public onEvent(event: any, func: (event: CustomEvent<any>) => any
+  ```
+* `offEvent`
+
+  ```ts
+  public offEvent(event: any)
+  ```
+
+这两个方法和插件的 `plugin.eventBus.on` 还有 `off` 方法用法一致，但是使用起来更加安全。在反复调用 `onEvent` 方法时，插件会自动 `off` 之前的方法，且在插件 `onunload` 的时候也会自动注销所有通过该接口绑定的回调函数。
+
+
+## 其他 API
+
+### protyleSlash
 
 ```ts
-interface MyEventBusMap extends IEventBusMap {
-    'run-code-block': BlockId;
-    'run-js-code': string;
-}
+public addProtyleSlash(slash: {
+    filter: string[],
+    html: string,
+    id: string,
+    callback(protyle: Protyle): void,
+})
+
+public removeProtyleSlash(id: string)
 ```
 
-1. `run-code-block`, 输入参数为 BlockID, 运行指定 ID 的 js 代码块
-2. `run-js-code`, 输入参数为 js 代码字符串，运行指定的代码
+为插件添加 `/` 功能菜单，`addProtyleSlash` 会自动检查 `id` 是否重复。
+
+## html button
 
 ```ts
-let bus = window?.runJs.plugin.eventBus;
-if (bus) {
-    bus.emit("run-code-block", blockID);
-    bus.emit("run-js-code", `
-      console.log("Hello world");
-    `);
-}
+public async createRunButton(id: BlockId, title?: string)
 ```
 
-> 但是实际上你也可以直接调用 `plugin.runCodeBlock` 和 `plugin.runJsCode` 函数而不必使用 eventBus.
+传入一个 js block，自动在 js 块前插入一个 html 按钮，点击可以运行 js 块
+
+![CreateRunButton](asset/createRunButton.png)
