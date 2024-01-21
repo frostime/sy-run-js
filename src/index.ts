@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-19 22:50:31
+ * @LastEditTime : 2023-12-31 11:23:07
  * @Description  : 
  */
 import {
@@ -505,7 +505,7 @@ export default class RunJsPlugin extends Plugin {
                     doc: {
                         //@ts-ignore
                         id: id,
-                        zoomIn: true
+                        zoomIn: false
                     }
                 });
             }
