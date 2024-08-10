@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-31 11:23:07
+ * @LastEditTime : 2024-08-10 18:42:03
  * @Description  : 
  */
 import {
@@ -97,8 +97,8 @@ const ButtonTemplate = {
         console.log(plugin);
         if (plugin)
         {
-            // plugin.runCodeBlock("{{id}}");
-            plugin?.eventBus?.emit("run-code-block", "{{id}}");
+            plugin.runCodeBlock("{{id}}");
+            // plugin?.eventBus?.emit("run-code-block", "{{id}}");
         }
     }
 </script>
@@ -444,6 +444,13 @@ export default class RunJsPlugin extends Plugin {
                     this.data[CALLABLE][name] = id;
                     showMessage(`Callable saved: ${name}`);
                     this.saveData(CALLABLE, this.data[CALLABLE]);
+                }
+            },
+            {
+                label: this.i18n.savebutton,
+                click: async () => {
+                    let name = ele.getAttribute("name");
+                    this.createRunButton(id, name);
                 }
             }
         ];

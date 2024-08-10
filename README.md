@@ -1,6 +1,6 @@
 The purpose of this plugin is to extend the capabilities of the plugin to the global scope, making it easier for users to develop "micro-plugins" within SiYuan to enhance its functionality.
 
-## 1. Run a Code Block
+## Run a Code Block
 
 ### Basic Usage
 
@@ -67,7 +67,7 @@ The following APIs can be called directly through the `plugin` object.
   Run code synchronously.
 
 
-## 2. Registering Code Blocks to the Top Bar
+## Registering Code Blocks to the Top Bar
 
 To add the current block to the top bar for quick access, follow these steps: 
 
@@ -97,7 +97,7 @@ The following APIs can be called directly through the `plugin` object.
   Remove the action.
 
 
-## 3. Registering Code Blocks as Callable Methods
+## Registering Code Blocks as Callable Methods
 
 Sometimes, users may want their code blocks to be callable methods that can be used by other code blocks. In the plugin, you can use the `plugin.call(<name>)` syntax to call other code blocks as functions.
 
@@ -134,7 +134,24 @@ The following API can be called directly through the `plugin` object:
 public async call(callableId: string, ...args: any[]): Promise<any>
 ```
 
-## 4. `globalThis.runJs`
+## Registering Code Blocks as a Button
+
+- By clicking on the code block menu and selecting "Create Button", you can create a button for a specific code block.
+- The default title of the button is the name of the block; if the block is unnamed, the title is "Run".
+
+> ⚠️ Caution: Please first enable "Allow execution of scripts within HTML blocks" in SiYuan's "Settings" - "Editor", otherwise the button script will not trigger.
+
+
+This functionality can be invoked through the following API call:
+
+```ts
+public async createRunButton(id: BlockId, title?: string)
+```
+
+![CreateRunButton](asset/createRunButton.png)
+
+
+## `globalThis.runJs`
 
 For greater flexibility, this plugin exposes a `runJs` object in the global scope. You can directly access the `runJs` object in the console, which contains all the objects exposed to code blocks (except `args` and `thisBlock`).
 
@@ -177,7 +194,7 @@ waitForRunJs(5).then((flag) => {
 
 
 
-## 5. Binding to SiYuan's Event Bus
+## Binding to SiYuan's Event Bus
 
 The `plugin` object of RunJs provides two methods for binding and unbinding event handlers to/from SiYuan's event bus:
 

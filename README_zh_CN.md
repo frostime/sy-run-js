@@ -1,6 +1,6 @@
 本插件的意义在于，将插件的一些能力扩展到全局，从而方便用户在思源内部就能开发一些「微插件」来增强思源的功能。
 
-## 1. 运行一个代码块
+## 运行一个代码块
 
 ### 基本用法
 
@@ -66,7 +66,7 @@ plugin.saveAction(thisBlock.id, "Test Code");
   运行代码, sync 模式
 
 
-## 2. 将代码块注册到顶栏
+## 将代码块注册到顶栏
 
 点击「块菜单——>Run JS——> 添加到顶栏」，可以将当前的块添加到顶栏按钮中，以方便快速触发。
 
@@ -97,7 +97,7 @@ plugin.saveAction(thisBlock.id, "Test Code");
 
 
 
-## 3. 将代码块注册为可调用的方法
+## 将代码块注册为可调用的方法
 
 有时候，用户可能希望自己的某个代码块可以作为一个可以被调用的方法，被其他代码块使用。在插件中，可以使用 `plugin.call(<name>)` 的形式将别的代码块作为函数来调用。
 
@@ -139,7 +139,24 @@ public async call(callableId: string, ...args: any[]): Promise<any>
 ```
 
 
-## 4. `globalThis.runJs`
+## 创建代码块的触发按钮
+
+- 点击代码块菜单，选择「创建触发按钮」，你可以为指定的代码库创建一个按钮。
+- 按钮的默认标题为块的命名；如果块没有命名，则标题为「Run」。
+
+> ⚠️ 注意: 请首先在思源的「设置」-「编辑器」当中开启「允许执行 HTML 块内脚本」，否则按钮脚本将无法触发。
+
+
+![CreateRunButton](asset/createRunButton.png)
+
+该功能可以通过如下 API 调用：
+
+```ts
+public async createRunButton(id: BlockId, title?: string)
+```
+
+
+## `globalThis.runJs`
 
 为了方便更灵活的使用，本插件将一个 `runJs` 对象暴露在全局。你可以直接在控制台中访问 `runJs` 对象，其中包含了暴露给代码块的所有对象（除了 `args` 和 `thisBlock`）。
 
@@ -174,7 +191,7 @@ waitForRunJs(5).then((flag) => {
 ```
 
 
-## 5. 绑定思源的事件总线
+## 绑定思源的事件总线
 
 RunJs 的 `plugin` 对外暴露了两个方法，用于绑定和解绑来自思源的总线事件
 
@@ -208,13 +225,3 @@ public removeProtyleSlash(id: string)
 ```
 
 为插件添加 `/` 功能菜单，`addProtyleSlash` 会自动检查 `id` 是否重复。
-
-## html button
-
-```ts
-public async createRunButton(id: BlockId, title?: string)
-```
-
-传入一个 js block，自动在 js 块前插入一个 html 按钮，点击可以运行 js 块
-
-![CreateRunButton](asset/createRunButton.png)

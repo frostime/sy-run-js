@@ -13,6 +13,7 @@
     "runit": "运行代码",
     "saveit": "添加到顶栏",
     "saveascallable": "保存为可调用方法",
+    "savebutton": "创建触发按钮",
     "pleasename": "请先设置代码块的名称(块命名)",
     "hello": {
         "makesure": "使用这个模板之前，请阅读<a href=\"https://github.com/siyuan-note/plugin-sample\">官方教程</a>, 确保自己已经理解了插件的基本开发流程。"
