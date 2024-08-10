@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-08-10 18:42:03
+ * @LastEditTime : 2024-08-10 19:22:04
  * @Description  : 
  */
 import {
@@ -19,7 +19,7 @@ import {
 } from "siyuan";
 import siyuan from "siyuan";
 // import "@/index.scss";
-import { changelog } from 'sy-plugin-changelog';
+// import { changelog } from 'sy-plugin-changelog';
 
 
 import * as api from "@/api";
@@ -413,23 +413,26 @@ export default class RunJsPlugin extends Plugin {
         let menu: Menu = detail.menu;
         let submenus: IMenuItemOption[] = [
             {
+                icon: 'iconPlay',
                 label: this.i18n.runit,
                 click: async () => {
                     this.runCodeBlock(id);
                 }
             },
             {
+                icon: 'iconFiles',
                 label: this.i18n.saveit,
                 click: async () => {
                     let name = ele.getAttribute("name");
                     if (name === undefined || name === null || name === "") {
-                        showMessage(`Please`);
+                        showMessage(`Please name the block first`);
                         return;
                     }
                     this.saveAction(id, name);
                 }
             },
             {
+                icon: 'iconBug',
                 label: this.i18n.saveascallable,
                 click: async () => {
                     let name = ele.getAttribute("name");
@@ -447,6 +450,7 @@ export default class RunJsPlugin extends Plugin {
                 }
             },
             {
+                icon: 'iconSelectText',
                 label: this.i18n.savebutton,
                 click: async () => {
                     let name = ele.getAttribute("name");
