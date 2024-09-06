@@ -241,3 +241,19 @@ Pass the ID of the JavaScript block (`id`) and an optional title for the button 
 
 ![CreateRunButton](asset/createRunButton.png)
 
+## Websocket Remote Request
+
+The plugin listens to a Websocket channel named `sy-run-js` locally in SiYuan.
+
+You can send JS code to the channel through the `/api/broadcast/postMessage` interface, and the plugin will automatically execute the code in the `message`.
+
+```bash
+curl --request POST \
+  --url http://127.0.0.1:1468/api/broadcast/postMessage \
+  --header 'Authorization: Token [Your token here]' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "channel": "sy-run-js",
+    "message": "console.log('\''Yes'\'')"
+}'
+```

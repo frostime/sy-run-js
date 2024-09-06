@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-08-10 19:22:04
+ * @LastEditTime : 2024-09-04 17:28:42
  * @Description  : 
  */
 import {
@@ -18,6 +18,7 @@ import {
     IMenuItemOption
 } from "siyuan";
 import siyuan from "siyuan";
+import * as ws from "./ws";
 // import "@/index.scss";
 // import { changelog } from 'sy-plugin-changelog';
 
@@ -221,6 +222,8 @@ export default class RunJsPlugin extends Plugin {
         this.data[SAVED_CODE] = this.data[SAVED_CODE] || {};
         this.data[CALLABLE] = this.data[CALLABLE] || {};
 
+        ws.startWebsocket(this, client);
+
         // changelog(this, 'i18n/CHANGELOG.md').then((result) => {
         //     let dialog = result.Dialog;
         //     if (dialog) {
@@ -236,7 +239,8 @@ export default class RunJsPlugin extends Plugin {
             //@ts-ignore
             this.eventBus.off(event, this.BindEvent[event]);
         }
-        this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
+        // this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
+        ws.closeWebsocket();
     }
 
     public async call(callableId: string, ...args: any[]): Promise<any> {

@@ -225,3 +225,21 @@ public removeProtyleSlash(id: string)
 ```
 
 为插件添加 `/` 功能菜单，`addProtyleSlash` 会自动检查 `id` 是否重复。
+
+
+## 远程请求
+
+插件在思源本地监听了一个 channel 名称为 `sy-run-js` 的 Websocket 信道。
+
+你可以通过思源的 `/api/broadcast/postMessage` 接口，向通道发送 js 代码，插件会自动执行 `message` 中的代码。
+
+```bash
+curl --request POST \
+  --url http://127.0.0.1:1468/api/broadcast/postMessage \
+  --header 'Authorization: Token [Your token here]' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "channel": "sy-run-js",
+    "message": "console.log('\''Yes'\'')"
+}'
+```
