@@ -227,7 +227,7 @@ public removeProtyleSlash(id: string)
 为插件添加 `/` 功能菜单，`addProtyleSlash` 会自动检查 `id` 是否重复。
 
 
-## 远程请求
+## 远程请求（🧪 实验性功能）
 
 插件在思源本地监听了一个 channel 名称为 `sy-run-js` 的 Websocket 信道。
 

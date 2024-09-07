@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-09-04 17:13:05
  * @FilePath     : /src/ws.ts
- * @LastEditTime : 2024-09-06 22:06:21
+ * @LastEditTime : 2024-09-07 16:46:52
  * @Description  : 
  */
 
@@ -19,8 +19,8 @@ const createWebsocket = (plugin: RunJsPlugin, client: Client) => {
     ws.onmessage = (event: MessageEvent) => {
         const jsCode = event.data;
         console.groupCollapsed(`Received code from ws channel ${CHANNEL_NAME}`);
-        plugin.runJsCodeAsync(jsCode);
-        console.log(jsCode);
+        console.debug(jsCode);
+        plugin.runJsCode(jsCode);
         console.groupEnd();
     }
 }
@@ -33,6 +33,7 @@ const closeWebsocket = () => {
     ws.close();
 
     ws = null;
+    console.debug(`Websocket closed`);
 }
 
 const startWebsocket = (plugin: RunJsPlugin, client: Client) => {
@@ -43,6 +44,7 @@ const startWebsocket = (plugin: RunJsPlugin, client: Client) => {
 
     closeWebsocket();
     createWebsocket(plugin, client);
+    console.debug(`Websocket started: channel ${plugin.name}`);
 }
 
 const isConnected = () => {

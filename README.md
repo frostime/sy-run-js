@@ -241,7 +241,7 @@ Pass the ID of the JavaScript block (`id`) and an optional title for the button 
 
 ![CreateRunButton](asset/createRunButton.png)
 
-## Websocket Remote Request
+## Remote Request (🧪 Experimental Feature)
 
 The plugin listens to a Websocket channel named `sy-run-js` locally in SiYuan.
 

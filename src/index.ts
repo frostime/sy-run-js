@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-09-04 17:28:42
+ * @LastEditTime : 2024-09-07 16:44:35
  * @Description  : 
  */
 import {
@@ -26,6 +26,7 @@ import * as ws from "./ws";
 import * as api from "@/api";
 
 import { Client } from "@siyuan-community/siyuan-sdk";
+import { SettingUtils } from "./libs/setting-utils";
 
 const client = new Client({
     //@ts-ignore
@@ -147,6 +148,8 @@ export function getFocusedBlock(): HTMLElement | null | undefined {
 
 export default class RunJsPlugin extends Plugin {
 
+    private settingUtils: SettingUtils;
+
     private static readonly GLOBAL: Record<string, any> = globalThis;
     private static readonly PROPERTY_NAME: string = "runJs";
 
@@ -222,7 +225,7 @@ export default class RunJsPlugin extends Plugin {
         this.data[SAVED_CODE] = this.data[SAVED_CODE] || {};
         this.data[CALLABLE] = this.data[CALLABLE] || {};
 
-        ws.startWebsocket(this, client);
+        await this.initSetting();
 
         // changelog(this, 'i18n/CHANGELOG.md').then((result) => {
         //     let dialog = result.Dialog;
@@ -232,6 +235,68 @@ export default class RunJsPlugin extends Plugin {
         //         dialog?.setFont('1.2rem');
         //     }
         // });
+    }
+
+    private async initSetting() {
+        // let timer: ReturnType<typeof setInterval> = null;
+        // const closeTimer = () => {
+        //     if (timer) {
+        //         clearInterval(timer);
+        //         timer = null;
+        //     }
+        // }
+
+        this.settingUtils = new SettingUtils({
+            plugin: this,
+            height: '30rem',
+            confirmCallback: (data: { enableWs: boolean }) => {
+                // console.log("enableWs", value);
+                let value = data.enableWs;
+                if (value) {
+                    ws.startWebsocket(this, client);
+                } else {
+                    if (ws.isConnected()) {
+                        ws.closeWebsocket();
+                    }
+                }
+            }
+        });
+        this.settingUtils.addItem({
+            type: 'checkbox',
+            title: '开启 Websocket 监听',
+            description: '开启后，可以通过 postMessage API 远程发送代码，交给思源执行',
+            key: 'enableWs',
+            value: false
+        });
+        // this.settingUtils.addItem({
+        //     type: 'custom',
+        //     title: 'Websocket 连接状态',
+        //     description: '当前 Websocket 连接状态',
+        //     key: 'wsStatus',
+        //     value: null,
+        //     omit: true,
+        //     setEleVal: () => {},
+        //     getEleVal: () => null,
+        //     createElement: () => {
+        //         let ele = document.createElement("span");
+        //         ele.className = 'b3-label';
+        //         ele.style.flex = '0';
+        //         ele.style.padding = '0px';
+        //         const updateStatus = () => {
+        //             let status = ws.isConnected();
+        //             ele.innerText = status? "🟢" : "🔴";
+        //             console.debug('Update WS Status', status);
+        //         }
+        //         timer = setInterval(updateStatus, 1000);
+        //         updateStatus();
+        //         return ele;
+        //     }
+        // });
+
+        let data = await this.settingUtils.load();
+        if (data?.enableWs === true) {
+            ws.startWebsocket(this, client);
+        }
     }
 
     onunload() {
