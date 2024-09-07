@@ -200,13 +200,13 @@ The `plugin` object of RunJs provides two methods for binding and unbinding even
 
 * `onEvent`
 
-  ````ts
+  ```ts
   public onEvent(event: any, func: (event: CustomEvent<any>) => any)
   ```
 
 * `offEvent`
 
-  ````ts
+  ```ts
   public offEvent(event: any)
   ```
 
@@ -243,7 +243,7 @@ Pass the ID of the JavaScript block (`id`) and an optional title for the button 
 
 ## Remote Request (🧪 Experimental Feature)
 
-The plugin listens to a Websocket channel named `sy-run-js` locally in SiYuan.
+The plugin listens to a broadcast channel named `sy-run-js` in SiYuan.
 
 You can send JS code to the channel through the `/api/broadcast/postMessage` interface, and the plugin will automatically execute the code in the `message`.
 
@@ -257,3 +257,18 @@ curl --request POST \
     "message": "console.log('\''Yes'\'')"
 }'
 ```
+
+> Note: About Broadcast.
+> The Broadcast API is a feature provided internally by SiYuan, allowing internal plugins to connect with SiYuan using WebSocket; e.g., binding a `channel` named sy-run-js, `ws://127.0.0.1:6806/ws/broadcast?channel=sy-run-js`.
+> After a plugin has bound to a specific channel, external sources can send messages to the channel by making a Post request to the postMessage web API.
+
+Objects accessible within the code:
+
+- `siyuan`
+- `client`
+- `api`
+- `plugin`
+- `ws`: A Proxy object for the WebSocket connection instance that binds the plugin to SiYuan.
+
+  - ⚠️ Note: This is not a WebSocket Server!
+- `postMessage: (channel: string, message: any) => void`: An implementation function of the PostMessage API, which is essentially similar to calling `api.request('/api/broadcast/postMessage')`.

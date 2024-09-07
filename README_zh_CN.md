@@ -229,7 +229,7 @@ public removeProtyleSlash(id: string)
 
 ## 远程请求（🧪 实验性功能）
 
-插件在思源本地监听了一个 channel 名称为 `sy-run-js` 的 Websocket 信道。
+插件在思源本地监听了一个 channel 名称为 `sy-run-js` 的 broadcast 信道。
 
 你可以通过思源的 `/api/broadcast/postMessage` 接口，向通道发送 js 代码，插件会自动执行 `message` 中的代码。
 
@@ -243,3 +243,18 @@ curl --request POST \
     "message": "console.log('\''Yes'\'')"
 }'
 ```
+
+> 附注：关于 Broadcast。
+> Broadcast API 是思源内部提供的一个功能，内部的插件通过使用 WebSocket 和思源相连; e.g 绑定一个 `channel` 为 sy-run-js 的信道，`ws://127.0.0.1:6806/ws/broadcast?channel=sy-run-js`。
+> 插件在绑定了特定的 channel 之后；外部可以通过 Post 请求 postMessage 接口，从而向信道发送消息。
+
+代码内可访问的对象：
+
+- `siyuan`
+- `client`
+- `api`
+- `plugin`
+- `ws`: 插件和思源绑定的 WebSocket 连接实例的一个 Proxy 对象
+
+  - ⚠️ 注意，这不是一个 WebSocket Server！
+- `postMessage: (channel: string, message: any) => void`: 一个 PostMessage API 的实现函数，本质上和调用 `api.request('/api/broadcast/postMessage')` 没有太大区别。

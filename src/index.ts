@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-09-07 16:44:35
+ * @LastEditTime : 2024-09-07 21:56:52
  * @Description  : 
  */
 import {
@@ -263,10 +263,28 @@ export default class RunJsPlugin extends Plugin {
         });
         this.settingUtils.addItem({
             type: 'checkbox',
-            title: '开启 Websocket 监听',
-            description: '开启后，可以通过 postMessage API 远程发送代码，交给思源执行',
+            title: 'Start Websocket Broadcast',
+            description: 'You can use SiYuan\'s postMessage API to send js code, this plugin will execute it.',
             key: 'enableWs',
             value: false
+        });
+        this.settingUtils.addItem({
+            type: 'hint',
+            title: 'Broadcast',
+            description: '',
+            direction: 'row',
+            omit: true,
+            key: 'wsUrl',
+            value: null,
+            createElement: () => {
+                let ele = document.createElement("span");
+                ele.className = 'b3-label';
+                ele.style.flex = '1';
+                ele.style.padding = '0px';
+                let urls = ws.wsUrl();
+                ele.innerHTML = `<div>API: ${urls.api}</div><div>Token: ${window.siyuan.config.api.token}</div>`
+                return ele;
+            }
         });
         // this.settingUtils.addItem({
         //     type: 'custom',
@@ -306,6 +324,15 @@ export default class RunJsPlugin extends Plugin {
         }
         // this.saveData(SAVED_CODE, this.data[SAVED_CODE]);
         ws.closeWebsocket();
+    }
+
+    funcViableVars() {
+        return {
+            siyuan,
+            client,
+            api,
+            plugin: this,
+        }
     }
 
     public async call(callableId: string, ...args: any[]): Promise<any> {

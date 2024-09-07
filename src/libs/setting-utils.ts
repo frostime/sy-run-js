@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2023-12-17 18:28:19
  * @FilePath     : /src/libs/setting-utils.ts
- * @LastEditTime : 2024-09-06 22:57:04
+ * @LastEditTime : 2024-09-07 21:24:56
  * @Description  : 
  */
 
@@ -247,10 +247,15 @@ export class SettingUtils {
     addItem(item: ISettingUtilsItem) {
         this.settings.set(item.key, item);
         const IsCustom = item.type === 'custom';
-        let error = IsCustom && (item.createElement === undefined || item.getEleVal === undefined || item.setEleVal === undefined);
+        let error = IsCustom && item.omit !== true && (item.createElement === undefined || item.getEleVal === undefined || item.setEleVal === undefined);
         if (error) {
             console.error('The custom setting item must have createElement, getEleVal and setEleVal methods');
             return;
+        }
+
+        if (item.omit === true) {
+            item.getEleVal = () => null;
+            item.setEleVal = () => null;
         }
 
         if (item.getEleVal === undefined) {
@@ -260,7 +265,7 @@ export class SettingUtils {
             item.setEleVal = createDefaultSetter(item.type);
         }
 
-        if (item.createElement === undefined) {
+        if (item.createElement === undefined && !IsCustom) {
             let itemElement = this.createDefaultElement(item);
             this.elements.set(item.key, itemElement);
             this.plugin.setting.addItem({
