@@ -1,0 +1,11 @@
+code_files:
+- 'src/**/*.ts'
+dict:
+  思源: SiYuan
+export_dir: src/types
+i18n_dir: src/i18n
+i18n_pattern: \(\(`(.+?)`\)\)
+i18n_var_mid: filename
+i18n_var_prefix: this.i18n
+main_file: zh_CN.json
+strategy: diff

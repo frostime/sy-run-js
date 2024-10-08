@@ -1,3 +1,7 @@
+## v0.7.2
+
+- 允许执行 assets 目录下的 js 文件
+
 ## v0.5.1
 
 Fix some loading bugs.

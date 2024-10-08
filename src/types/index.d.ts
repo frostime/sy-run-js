@@ -74,3 +74,28 @@ interface IAction {
     sort: number;
 };
 
+interface ISiyuan {
+    languages: {
+        cancel: string;
+        confirm: string;
+    };
+}
+
+
+declare interface Window {
+    siyuan: {
+        config: any;
+        notebooks: any;
+        menus: any;
+        dialogs: any;
+        blockPanels: any;
+        storage: any;
+        user: any;
+        ws: any;
+        languages: any;
+        emojis: any;
+    };
+    Lute: any;
+    fmisc: FMiscPlugin
+}
+

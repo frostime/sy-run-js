@@ -1,6 +1,6 @@
 {
   "name": "sy-run-js",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "type": "module",
   "description": "",
   "repository": "",
@@ -16,12 +16,12 @@
   "devDependencies": {
     "@types/node": "^20.2.0",
     "eslint": "^8.42.0",
-    "fast-glob": "^3.2.12",
-    "glob": "^7.2.3",
+    "fast-glob": "^3.3.2",
+    "glob": "^9.3.5",
     "minimist": "^1.2.8",
     "rollup-plugin-livereload": "^2.0.5",
     "sass": "^1.62.1",
-    "siyuan": "^1.0.2",
+    "siyuan": "^1.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "vite": "^4.5.2",

@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-09-07 21:56:52
+ * @LastEditTime : 2024-10-08 12:44:04
  * @Description  : 
  */
 import {
@@ -27,6 +27,8 @@ import * as api from "@/api";
 
 import { Client } from "@siyuan-community/siyuan-sdk";
 import { SettingUtils } from "./libs/setting-utils";
+import { getFileBlob } from "@/api";
+import { confirmDialog, html2ele } from "./libs/dialog";
 
 const client = new Client({
     //@ts-ignore
@@ -155,6 +157,8 @@ export default class RunJsPlugin extends Plugin {
 
     isMobile: boolean;
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
+    private onAssetBindThis = this.onAssetMenu.bind(this);
+
     declare data: {
         SAVE_CODE: { [key: string]: IAction[] }
         CALLABLE: { [key: string]: BlockId }
@@ -200,6 +204,7 @@ export default class RunJsPlugin extends Plugin {
             }
         });
 
+        this.eventBus.on("open-menu-link", this.onAssetBindThis);
         this.eventBus.on("click-blockicon", this.blockIconEventBindThis);
         //@ts-ignore
         this.eventBus.on("run-code-block", ({ detail }) => {
@@ -483,6 +488,46 @@ export default class RunJsPlugin extends Plugin {
     }
 
     /******************** Private ********************/
+
+    private async onAssetMenu({ detail }) {
+        let menu = detail.menu;
+        // let protyle = detail.protyle;
+        const hrefSpan = detail.element;
+
+        let dataHref = hrefSpan.getAttribute("data-href");
+        if (!dataHref?.startsWith("assets/")) {
+            return;
+        }
+        if (!dataHref.toLowerCase().endsWith(".js")) {
+            return;
+        }
+
+        menu.addItem({
+            icon: "iconUrl",
+            label: this.i18n.index_ts.runjsscript,
+            click: async () => {
+                const blob = await getFileBlob(`/data/${dataHref}`);
+                if (!blob) {
+                    showMessage(this.i18n.index_ts.getjsscriptfail);
+                    return;
+                }
+                const jsText = await blob.text();
+                const ele = html2ele(`<div style="display: flex; flex-direction: column; gap: 1rem; height: 100%;">
+                    <div>${this.i18n.index_ts.confirmexecjs}</div>
+                    <textarea style="width: 100%; flex: 1; resize: none;" readonly>${jsText}</textarea>
+                    </div>`);
+                confirmDialog({
+                    title: this.i18n.index_ts.confirmexec,
+                    content: ele,
+                    confirm: () => {
+                        this.runJsCode(jsText);
+                    },
+                    height: "30rem",
+                    width: "30rem",
+                });
+            }
+        });
+    }
 
     private async blockIconEvent({ detail }: any) {
         if (detail.blockElements.length > 1) {
