@@ -1,5 +1,9 @@
 The purpose of this plugin is to extend the capabilities of the plugin to the global scope, making it easier for users to develop "micro-plugins" within SiYuan to enhance its functionality.
 
+> [!TIP]
+> In response to a user's [suggestion](https://github.com/frostime/sy-run-js/issues/13), we have created a [discussion forum](https://github.com/frostime/sy-run-js/discussions) on GitHub for this project. We welcome everyone to share their JavaScript code there.
+
+
 ## Run a Code Block
 
 ### Basic Usage

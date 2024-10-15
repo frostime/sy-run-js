@@ -2,10 +2,14 @@
   "name": "sy-run-js",
   "author": "frostime",
   "url": "https://github.com/frostime/sy-run-js",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "minAppVersion": "3.0.0",
-  "backends": ["all"],
-  "frontends": ["all"],
+  "backends": [
+    "all"
+  ],
+  "frontends": [
+    "all"
+  ],
   "displayName": {
     "en_US": "Run Javascript",
     "zh_CN": "运行 Javascript"

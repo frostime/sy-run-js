@@ -1,5 +1,8 @@
 本插件的意义在于，将插件的一些能力扩展到全局，从而方便用户在思源内部就能开发一些「微插件」来增强思源的功能。
 
+> [!TIP]
+> 应用户[建议](https://github.com/frostime/sy-run-js/issues/13)，本项目在 GitHub 上创建了一个[讨论区](https://github.com/frostime/sy-run-js/discussions)。欢迎大家在此分享自己的 JS 代码。
+
 ## 运行一个代码块
 
 ### 基本用法
