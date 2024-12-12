@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-08-14 18:01:15
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-10-08 12:44:04
+ * @LastEditTime : 2024-11-06 15:27:38
  * @Description  : 
  */
 import {
@@ -29,6 +29,7 @@ import { Client } from "@siyuan-community/siyuan-sdk";
 import { SettingUtils } from "./libs/setting-utils";
 import { getFileBlob } from "@/api";
 import { confirmDialog, html2ele } from "./libs/dialog";
+import debugJSBlock from "./features/debug-dialog";
 
 const client = new Client({
     //@ts-ignore
@@ -596,6 +597,13 @@ export default class RunJsPlugin extends Plugin {
                 click: async () => {
                     let name = ele.getAttribute("name");
                     this.createRunButton(id, name);
+                }
+            },
+            {
+                icon: 'iconGit',
+                label: 'Debug',
+                click: async () => {
+                    debugJSBlock(id, this);
                 }
             }
         ];
