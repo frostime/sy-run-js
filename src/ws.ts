@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2024-09-04 17:13:05
  * @FilePath     : /src/ws.ts
- * @LastEditTime : 2024-09-07 22:14:10
+ * @LastEditTime : 2024-12-12 13:39:30
  * @Description  : 
  */
 
@@ -76,6 +76,12 @@ const closeWebsocket = () => {
 }
 
 const startWebsocket = (plugin: RunJsPlugin, client: Client) => {
+    const body = document.body;
+    if (body.classList.contains('body--window')) {
+        console.warn(`RunJS would not start ws in SiYuan mini windows.`);
+        return;
+    }
+
     if (isConnected()) {
         console.warn(`Websocket is already connected`);
         return;

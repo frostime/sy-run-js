@@ -2,7 +2,7 @@
   "name": "sy-run-js",
   "author": "frostime",
   "url": "https://github.com/frostime/sy-run-js",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "minAppVersion": "3.0.0",
   "backends": [
     "all"
